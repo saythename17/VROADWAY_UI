@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 <resources>
-    <string name="app_name">Jetcaster</string>
+    <string name="app_name">VROADWAY3.0</string>
 
     <string name="connection_error_title">Connection error</string>
     <string name="connection_error_message">Unable to fetch podcasts feeds.\nCheck your internet connection and try again.</string>
@@ -24,7 +24,7 @@
     <string name="your_podcasts">Your podcasts</string>
     <string name="latest_episodes">Latest episodes</string>
 
-    <string name="home_library">Your library</string>
+    <string name="home_my">My</string>
     <string name="home_discover">Discover</string>
 
     <string name="updated_longer">Updated a while ago</string>

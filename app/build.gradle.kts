@@ -22,10 +22,10 @@ plugins {
 
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
-    namespace = "com.example.jetcaster"
+    namespace = "com.alphacircle.vroadway"
 
     defaultConfig {
-        applicationId = "com.example.jetcaster"
+        applicationId = "com.alphacircle.vroadway"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
