@@ -1,7 +1,5 @@
 package com.alphacircle.vroadway.ui.home.category
 
-import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,9 +32,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.More
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.PlayCircleFilled
@@ -65,7 +60,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
-import androidx.constraintlayout.compose.Dimension.Companion.matchParent
 import androidx.constraintlayout.compose.Dimension.Companion.preferredWrapContent
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -76,14 +70,13 @@ import com.alphacircle.vroadway.data.Episode
 import com.alphacircle.vroadway.data.EpisodeToPodcast
 import com.alphacircle.vroadway.data.Podcast
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
+import com.alphacircle.vroadway.ui.components.ContentPopupMenu
 import com.alphacircle.vroadway.ui.home.PreviewEpisodes
 import com.alphacircle.vroadway.ui.home.PreviewPodcasts
 import com.alphacircle.vroadway.ui.theme.VroadwayTheme
 import com.alphacircle.vroadway.ui.theme.Keyline1
 import com.alphacircle.vroadway.util.LockCategoryIconButton
 import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
-import kotlinx.coroutines.NonDisposableHandle
-import kotlinx.coroutines.NonDisposableHandle.parent
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -159,8 +152,8 @@ fun EpisodeListItem(
     modifier: Modifier = Modifier
 ) {
 
-    var popupState by remember { mutableStateOf(false) }
-    val onPopupDismiss = { value: Boolean -> popupState = value }
+    var popupExpanded by remember { mutableStateOf(false) }
+    val onPopupDismiss = { value: Boolean -> popupExpanded = value }
 
     ConstraintLayout(modifier = modifier.clickable { onClick(episode.uri) }) {
         val (
@@ -285,159 +278,16 @@ fun EpisodeListItem(
             }
         )
 
-        Box(
+        ContentPopupMenu(
+            expanded = popupExpanded,
+            onPopupDismiss = onPopupDismiss,
+            infoOnClick = infoOnClick,
             modifier = Modifier
                 .constrainAs(dropdown) {
                     end.linkTo(parent.end, 16.dp)
                 }
                 .fillMaxWidth()
-        ) {
-            DropdownMenu(
-                expanded = popupState,
-                onDismissRequest = { onPopupDismiss },
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .align(Alignment.TopEnd)
-            ) {
-                val items = listOf(
-                    com.alphacircle.vroadway.ui.components.DropdownMenuItem(
-                        icon = Icons.Filled.Info,
-                        text = "Info",
-                        contentDescription = "Info",
-                        onClick = {
-                            infoOnClick()
-                        }
-                    ),
-                    com.alphacircle.vroadway.ui.components.DropdownMenuItem(
-                        icon = Icons.Filled.Share,
-                        text = "Share",
-                        contentDescription = "Share",
-                        onClick = {}
-                    ),
-                    com.alphacircle.vroadway.ui.components.DropdownMenuItem(
-                        icon = Icons.Filled.Delete,
-                        text = "Delete",
-                        contentDescription = "Delete",
-                        onClick = {}
-                    )
-                )
-                items.forEachIndexed { _, item ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onPopupDismiss(false)
-                            item.onClick()
-                        },
-                        modifier = Modifier.padding(0.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier.wrapContentWidth()
-                        ) {
-                            when {
-                                item.text != "Delete" ->
-                                    Row {
-                                        Icon(
-                                            imageVector = item.icon,
-                                            contentDescription = item.contentDescription,
-                                            modifier = Modifier.padding(8.dp)
-                                        )
-                                        Text(
-                                            text = item.text,
-                                            style = MaterialTheme.typography.body1,
-                                            modifier = Modifier.padding(8.dp),
-                                        )
-                                    }
-                                item.text == "Delete" ->
-                                    Row {
-                                        Icon(
-                                            imageVector = item.icon,
-                                            contentDescription = item.contentDescription,
-                                            modifier = Modifier.padding(8.dp),
-                                            tint = Color.Red
-                                        )
-                                        Text(
-                                            text = item.text,
-                                            style = MaterialTheme.typography.body1,
-                                            modifier = Modifier.padding(8.dp),
-                                            color = Color.Red
-                                        )
-                                    }
-                            }
-
-//                            if(index < items.size-1) {
-//                                Divider(
-//                                    color = MaterialTheme.colors.onSurface,
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .height(0.3.dp)
-//                                )
-//                            }
-                        }
-                    }
-                }
-            }
-
-
-        }
-
-
-    }
-
-
-}
-
-@Composable
-fun CategoryMenu(expanded: Boolean, onPopupDismiss: (Boolean) -> Unit, modifier: Modifier) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { onPopupDismiss },
-        modifier = modifier
-    ) {
-        val items = listOf(
-            com.alphacircle.vroadway.ui.components.DropdownMenuItem(
-                icon = Icons.Filled.Info,
-                text = "Info",
-                contentDescription = "Info",
-                onClick = {}
-            ),
-            com.alphacircle.vroadway.ui.components.DropdownMenuItem(
-                icon = Icons.Filled.Share,
-                text = "Share",
-                contentDescription = "Share",
-                onClick = {}
-            ),
-            com.alphacircle.vroadway.ui.components.DropdownMenuItem(
-                icon = Icons.Filled.Delete,
-                text = "Delete",
-                contentDescription = "Delete",
-                onClick = {}
-            )
         )
-        items.forEachIndexed { index, item ->
-            DropdownMenuItem(
-                onClick = {
-                    onPopupDismiss(false)
-                },
-                contentPadding = PaddingValues.Absolute(0.dp)
-            ) {
-                Column {
-//                        items.forEach { item ->
-                    Row() {
-                        Icon(
-                            imageVector = item.icon,
-                            contentDescription = item.contentDescription,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                        Text(
-                            text = item.text,
-                            style = MaterialTheme.typography.body1,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                    Divider(color = MaterialTheme.colors.onSurface)
-//                        }
-                }
-            }
-        }
     }
 }
 
