@@ -128,4 +128,5 @@ dependencies {
 
     ksp(libs.androidx.room.compiler)
     coreLibraryDesugaring(libs.core.jdk.desugaring)
+    implementation ("com.airbnb.android:lottie-compose:6.0.1")
 }
