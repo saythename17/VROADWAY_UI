@@ -1,39 +1,24 @@
 package com.alphacircle.vroadway.ui.settings
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DocumentScanner
+import androidx.compose.material.icons.filled.Dvr
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.alphacircle.vroadway.R
-import com.alphacircle.vroadway.ui.Screen
+import com.alphacircle.vroadway.ui.components.MenuIcon
+import com.alphacircle.vroadway.ui.components.MenuItem
 import com.alphacircle.vroadway.ui.components.TopBar
 
 @Composable
@@ -52,11 +37,39 @@ fun Settings(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(it)
-                .padding(16.dp)
         ) {
-
+            SettingItemList()
         }
     }
+}
+
+@Composable
+fun SettingItemList() {
+    MenuItem(
+        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Wifi),
+        name = R.string.setting_item_download,
+        onClick = {}
+    )
+    MenuItem(
+        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.QrCode),
+        name = R.string.setting_item_hmd,
+        onClick = {}
+    )
+    MenuItem(
+        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Dvr),
+        name = R.string.setting_item_faq,
+        onClick = {}
+    )
+    MenuItem(
+        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Notifications),
+        name = R.string.setting_item_notices,
+        onClick = {}
+    )
+    MenuItem(
+        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.DocumentScanner),
+        name = R.string.setting_item_licenses,
+        onClick = {}
+    )
 }
 
 @Preview(showSystemUi = true)

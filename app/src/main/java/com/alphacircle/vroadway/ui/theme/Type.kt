@@ -93,7 +93,7 @@ val EnglishTypography = Typography(
     body1 = TextStyle(
         fontFamily = Montserrat,
         fontSize = 16.sp,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Light,
         lineHeight = 20.sp,
         letterSpacing = 0.15.sp
     ),
@@ -121,7 +121,7 @@ val EnglishTypography = Typography(
     overline = TextStyle(
         fontFamily = Montserrat,
         fontSize = 12.sp,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Light,
         lineHeight = 16.sp,
         letterSpacing = 1.sp
     ),

@@ -34,7 +34,7 @@ fun TopBar(onBackPress: () -> Unit, appBarColor: Color, title: String?) {
         elevation = 0.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp, 32.dp),
+            .padding(0.dp, 32.dp, 0.dp, 8.dp),
         title = {
             //TopAppBar Content
             Box(Modifier.height(32.dp)) {

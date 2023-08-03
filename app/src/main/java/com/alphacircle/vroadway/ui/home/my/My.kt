@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.R
+import com.alphacircle.vroadway.data.Category
 import com.alphacircle.vroadway.ui.home.category.EpisodeList
 import com.alphacircle.vroadway.ui.home.category.PodcastCategoryViewModel
 import com.alphacircle.vroadway.ui.home.discover.DiscoverViewModel
@@ -41,29 +42,31 @@ fun My(
 
         val selectedCategory = viewState.selectedCategory
 
-        when {
-            false ->
-                Crossfade(
-                    targetState = selectedCategory,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                ) { category ->
-                    /**
-                     * TODO, need to think about how this will scroll within the outer VerticalScroller
-                     */
-                    val viewModel: PodcastCategoryViewModel = viewModel(
-                        // We use a custom key, using the category parameter
-                        key = "category_list_${category!!.id}",
-                        factory = viewModelProviderFactoryOf { PodcastCategoryViewModel(category!!.id) }
-                    )
+        when(selectedCategory) {
+//            is Category ->
+//                Crossfade(
+//                    targetState = selectedCategory,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .weight(1f)
+//                ) { category ->
+//                    /**
+//                     * TODO, need to think about how this will scroll within the outer VerticalScroller
+//                     */
+//                    val viewModel: PodcastCategoryViewModel = viewModel(
+//                        // We use a custom key, using the category parameter
+//                        key = "category_list_${category!!.id}",
+//                        factory = viewModelProviderFactoryOf { PodcastCategoryViewModel(category!!.id) }
+//                    )
+//
+//                    val viewState by viewModel.state.collectAsStateWithLifecycle()
+//                    EpisodeList(viewState.episodes, navigateToPlayer, navigateToInfo)
+//
+//                }
+//
+//            null -> NoListView()
 
-                    val viewState by viewModel.state.collectAsStateWithLifecycle()
-                    EpisodeList(viewState.episodes, navigateToPlayer, navigateToInfo)
-
-                }
-
-            selectedCategory != null -> NoListView()
+            is Category -> NoListView()
         }
 
 
