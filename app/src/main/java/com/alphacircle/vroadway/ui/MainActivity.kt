@@ -22,7 +22,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
-import com.alphacircle.vroadway.ui.theme.VroadwayTheme
+import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
             val windowSizeClass = calculateWindowSizeClass(this)
             val displayFeatures = calculateDisplayFeatures(this)
 
-            VroadwayTheme {
+            AppTheme {
                 VroadwayApp(
                     windowSizeClass,
                     displayFeatures

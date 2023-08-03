@@ -88,7 +88,7 @@ import androidx.window.layout.FoldingFeature
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.alphacircle.vroadway.R
-import com.alphacircle.vroadway.ui.theme.VroadwayTheme
+import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.MinContrastOfPrimaryVsSurface
 import com.alphacircle.vroadway.util.DynamicThemePrimaryColorsFromImage
 import com.alphacircle.vroadway.util.contrastAgainst
@@ -590,7 +590,7 @@ private fun FullScreenLoading(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun TopAppBarPreview() {
-    VroadwayTheme {
+    AppTheme {
         TopAppBar(onBackPress = { })
     }
 }
@@ -598,7 +598,7 @@ fun TopAppBarPreview() {
 @Preview
 @Composable
 fun PlayerButtonsPreview() {
-    VroadwayTheme {
+    AppTheme {
         PlayerButtons()
     }
 }
@@ -610,7 +610,7 @@ fun PlayerButtonsPreview() {
 @Preview(device = Devices.DESKTOP)
 @Composable
 fun PlayerScreenPreview() {
-    VroadwayTheme {
+    AppTheme {
         BoxWithConstraints {
             PlayerScreen(
                 PlayerUiState(

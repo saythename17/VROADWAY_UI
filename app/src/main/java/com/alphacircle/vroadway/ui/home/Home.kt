@@ -75,8 +75,8 @@ import coil.compose.AsyncImage
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.ui.home.discover.Discover
-import com.alphacircle.vroadway.ui.theme.VroadwayTheme
-import com.alphacircle.vroadway.ui.theme.Keyline1
+import com.alphacircle.vroadway.ui.home.my.My
+import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.MinContrastOfPrimaryVsSurface
 import com.alphacircle.vroadway.util.DynamicThemePrimaryColorsFromImage
 import com.alphacircle.vroadway.util.LockCategoryIconButton
@@ -201,7 +201,10 @@ fun HomeContent(
 
         when (selectedHomeCategory) {
             HomeCategory.My -> {
-                // TODO
+                My(
+                    navigateToPlayer = navigateToPlayer,
+                    navigateToInfo = navigateToInfo
+                )
             }
 
             HomeCategory.Discover -> {
@@ -406,7 +409,7 @@ private fun lastUpdated(updated: OffsetDateTime): String {
 @Preview
 @Composable
 fun PreviewHomeAppBar() {
-    VroadwayTheme {
+    AppTheme {
         HomeAppBar(backgroundColor = Color.Transparent, navigateToSettings = {}, navigateToAccount = {})
     }
 }
@@ -414,7 +417,7 @@ fun PreviewHomeAppBar() {
 @Preview
 @Composable
 fun PreviewPodcastCard() {
-    VroadwayTheme {
+    AppTheme {
         FollowedPodcastCarouselItem(
             modifier = Modifier.size(128.dp),
             onUnfollowedClick = {}

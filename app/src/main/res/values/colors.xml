@@ -17,4 +17,5 @@
 
 <resources>
     <color name="ic_launcher_background">#121212</color>
+    <color name="dark_filter">#77121212</color>
 </resources>

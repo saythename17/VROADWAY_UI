@@ -51,5 +51,5 @@ val VroadwayColors = darkColors(
     secondary = SubBlue,
     onSecondary = Color.Black,
     error = Warning,
-    onError = Color.Black
+    onError = Color.Black,
 )

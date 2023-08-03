@@ -20,12 +20,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 
 @Composable
-fun VroadwayTheme(
+fun AppTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
         colors = VroadwayColors,
-        typography = VroadwayTypography,
+        typography = EnglishTypography,
         shapes = VroadwayShapes,
         content = content
     )
