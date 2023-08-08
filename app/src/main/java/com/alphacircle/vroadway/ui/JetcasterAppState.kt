@@ -42,7 +42,11 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Info : Screen("info")
     object Account : Screen("account")
+    object PurchasedHistory : Screen("purchased")
     object Settings : Screen("settings")
+    object Guides : Screen("guides")
+    object Notices : Screen("notices")
+    object License : Screen("license")
     object Player : Screen("player/{episodeUri}") {
         fun createRoute(episodeUri: String) = "player/$episodeUri"
     }
@@ -83,8 +87,25 @@ class VroadwayAppState(
         navController.navigate(Screen.Account.route)
     }
 
+    fun navigateToPurchasedHistory() {
+        Log.println(Log.DEBUG, "----------", "⬇️")
+        navController.navigate(Screen.PurchasedHistory.route)
+    }
+
     fun navigateToSettings() {
         navController.navigate(Screen.Settings.route)
+    }
+
+    fun navigateToGuides() {
+        navController.navigate(Screen.Guides.route)
+    }
+
+    fun navigateToNotices() {
+        navController.navigate(Screen.Notices.route)
+    }
+
+    fun navigateToLicense() {
+        navController.navigate(Screen.License.route)
     }
 
     fun navigateToInfo() {

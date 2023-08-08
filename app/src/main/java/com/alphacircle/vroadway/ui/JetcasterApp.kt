@@ -29,10 +29,14 @@ import androidx.navigation.compose.composable
 import androidx.window.layout.DisplayFeature
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.ui.account.Account
+import com.alphacircle.vroadway.ui.account.PurchasedHistory
 import com.alphacircle.vroadway.ui.home.Home
 import com.alphacircle.vroadway.ui.info.Info
 import com.alphacircle.vroadway.ui.player.PlayerScreen
 import com.alphacircle.vroadway.ui.player.PlayerViewModel
+import com.alphacircle.vroadway.ui.settings.Guides
+import com.alphacircle.vroadway.ui.settings.Licenses
+import com.alphacircle.vroadway.ui.settings.Notices
 import com.alphacircle.vroadway.ui.settings.Settings
 import com.alphacircle.vroadway.ui.splash.Splash
 
@@ -47,8 +51,8 @@ fun VroadwayApp(
             navController = appState.navController,
             startDestination = Screen.Splash.route
         ) {
-            composable(Screen.Splash.route) {_ ->
-                Splash ( navigateToHome = { appState.navigateToHome() } )
+            composable(Screen.Splash.route) { _ ->
+                Splash(navigateToHome = { appState.navigateToHome() })
             }
             composable(Screen.Home.route) { backStackEntry ->
                 Home(
@@ -63,11 +67,31 @@ fun VroadwayApp(
             composable(Screen.Info.route) { _ ->
                 Info(onBackPress = appState::navigateBack)
             }
-            composable(Screen.Settings.route) { _ ->
-                Settings(onBackPress = appState::navigateBack)
-            }
             composable(Screen.Account.route) { _ ->
-                Account(onBackPress = appState::navigateBack)
+                Account(
+                    onBackPress = appState::navigateBack,
+                    navigateToPurchasedHistory = appState::navigateToPurchasedHistory
+                )
+            }
+            composable(Screen.PurchasedHistory.route) {
+                PurchasedHistory(onBackPress = appState::navigateBack)
+            }
+            composable(Screen.Settings.route) { _ ->
+                Settings(
+                    onBackPress = appState::navigateBack,
+                    navigateToGuides = appState::navigateToGuides,
+                    navigateToNotices = appState::navigateToNotices,
+                    navigateToLicense = appState::navigateToLicense
+                )
+            }
+            composable(Screen.Guides.route) { _ ->
+                Guides(onBackPress = appState::navigateBack)
+            }
+            composable(Screen.License.route) { _ ->
+                Licenses(onBackPress = appState::navigateBack)
+            }
+            composable(Screen.Notices.route) { _ ->
+                Notices(onBackPress = appState::navigateBack)
             }
             composable(Screen.Player.route) { backStackEntry ->
                 val playerViewModel: PlayerViewModel = viewModel(

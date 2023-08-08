@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alphacircle.vroadway.R
+import com.alphacircle.vroadway.ui.theme.EnglishTypography
 
 @Composable
 fun TopBar(onBackPress: () -> Unit, appBarColor: Color, title: String?) {
@@ -60,7 +61,7 @@ fun TopBar(onBackPress: () -> Unit, appBarColor: Color, title: String?) {
 
                     Text(
                         text = title ?: "",
-                        style = MaterialTheme.typography.h6,
+                        style = EnglishTypography.h6,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()

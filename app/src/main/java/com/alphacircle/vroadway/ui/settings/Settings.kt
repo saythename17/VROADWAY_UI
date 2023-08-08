@@ -23,7 +23,10 @@ import com.alphacircle.vroadway.ui.components.TopBar
 
 @Composable
 fun Settings(
-    onBackPress: () -> Unit
+    onBackPress: () -> Unit,
+    navigateToGuides: () -> Unit,
+    navigateToNotices: () -> Unit,
+    navigateToLicense: () -> Unit,
 ) {
     val surfaceColor = MaterialTheme.colors.surface
     val appBarColor = surfaceColor.copy(alpha = 0.87f)
@@ -38,13 +41,21 @@ fun Settings(
                 .verticalScroll(rememberScrollState())
                 .padding(it)
         ) {
-            SettingItemList()
+            SettingItemList(
+                navigateToGuides = navigateToGuides,
+                navigateToNotices = navigateToNotices,
+                navigateToLicense = navigateToLicense
+            )
         }
     }
 }
 
 @Composable
-fun SettingItemList() {
+fun SettingItemList(
+    navigateToGuides: () -> Unit,
+    navigateToNotices: () -> Unit,
+    navigateToLicense: () -> Unit,
+) {
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Wifi),
         name = R.string.setting_item_download,
@@ -57,23 +68,23 @@ fun SettingItemList() {
     )
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Dvr),
-        name = R.string.setting_item_faq,
-        onClick = {}
+        name = R.string.setting_item_guide,
+        onClick = navigateToGuides
     )
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Notifications),
         name = R.string.setting_item_notices,
-        onClick = {}
+        onClick = navigateToNotices
     )
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.DocumentScanner),
         name = R.string.setting_item_licenses,
-        onClick = {}
+        onClick = navigateToLicense
     )
 }
 
 @Preview(showSystemUi = true)
 @Composable
 fun SettingsPreview() {
-    Settings {}
+    Settings({}, {}, {}, {})
 }

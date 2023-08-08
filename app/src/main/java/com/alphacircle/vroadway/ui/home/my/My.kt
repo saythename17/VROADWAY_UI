@@ -21,11 +21,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.data.Category
+import com.alphacircle.vroadway.ui.components.NoListView
 import com.alphacircle.vroadway.ui.home.category.EpisodeList
 import com.alphacircle.vroadway.ui.home.category.PodcastCategoryViewModel
 import com.alphacircle.vroadway.ui.home.discover.DiscoverViewModel
 import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.KoreanTypography
+import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
 
 @Composable
@@ -66,7 +68,7 @@ fun My(
 //
 //            null -> NoListView()
 
-            is Category -> NoListView()
+            is Category -> NoListView(text = stringResource(id = R.string.no_download_list))
         }
 
 
@@ -94,30 +96,10 @@ fun TitleBar(title: String) {
     )
 }
 
-@Composable
-fun NoListView() {
-    AppTheme {
-        Text(
-            text = stringResource(id = R.string.no_download_list),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(40.dp),
-            textAlign = TextAlign.Center,
-            style = KoreanTypography.body2
-        )
-    }
-}
-
 @Preview
 @Composable
 fun PreviewTitleBar() {
     TitleBar(stringResource(id = R.string.my_download_title))
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewNoListView() {
-    NoListView()
 }
 
 @Preview

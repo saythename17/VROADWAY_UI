@@ -76,7 +76,7 @@ fun Discover(
                 /**
                  * TODO, need to think about how this will scroll within the outer VerticalScroller
                  */
-                PodcastCategory(
+                 PodcastCategory(
                     categoryId = category.id,
                     navigateToPlayer = navigateToPlayer,
                     navigateToInfo = navigateToInfo,

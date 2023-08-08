@@ -47,12 +47,13 @@
 
     <string name="cd_account">Account</string>
     <string name="account_purchased_history">Purchased History</string>
+    <string name="no_purchased_history">구매 내역이 없습니다.</string>
     <string name="account_logout">Logout</string>
 
     <string name="cd_settings">Settings</string>
     <string name="setting_item_download">Downloads on Wi-Fi Only</string>
     <string name="setting_item_hmd">Change HMD Type</string>
-    <string name="setting_item_faq">Guides &amp; FAQ</string>
+    <string name="setting_item_guide">Guides &amp; FAQ</string>
     <string name="setting_item_notices">Notices</string>
     <string name="setting_item_licenses">Licenses</string>
 

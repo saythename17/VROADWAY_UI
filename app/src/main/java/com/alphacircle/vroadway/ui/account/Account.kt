@@ -43,7 +43,8 @@ import com.alphacircle.vroadway.ui.theme.EnglishTypography
 
 @Composable
 fun Account(
-    onBackPress: () -> Unit
+    onBackPress: () -> Unit,
+    navigateToPurchasedHistory: () -> Unit
 ) {
     val surfaceColor = MaterialTheme.colors.surface
     val appBarColor = surfaceColor.copy(alpha = 0.87f)
@@ -69,7 +70,7 @@ fun Account(
         ) {
 
             when (isSignIn) {
-                true -> AccountComponents()
+                true -> AccountComponents(navigateToPurchasedHistory)
                 false -> SignIn()
             }
         }
@@ -77,14 +78,13 @@ fun Account(
 }
 
 @Composable
-fun AccountComponents() {
+fun AccountComponents(navigateToPurchasedHistory: () -> Unit) {
     Profile()
-//    Spacer(modifier = Modifier.height(16.dp))
 
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Payment),
         name = R.string.account_purchased_history,
-        onClick = {}
+        onClick = navigateToPurchasedHistory
     )
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Logout),
@@ -149,5 +149,5 @@ fun DeleteButton() {
 @Preview(showSystemUi = true)
 @Composable
 fun AccountPreview() {
-    Account {}
+    Account({}, {})
 }
