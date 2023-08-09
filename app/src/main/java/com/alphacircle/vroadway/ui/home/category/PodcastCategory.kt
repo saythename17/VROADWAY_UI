@@ -1,6 +1,7 @@
 package com.alphacircle.vroadway.ui.home.category
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -39,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -63,12 +67,14 @@ import com.alphacircle.vroadway.data.EpisodeToPodcast
 import com.alphacircle.vroadway.data.Podcast
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.ui.components.ContentPopupMenu
+import com.alphacircle.vroadway.ui.components.LockCategoryGuide
 import com.alphacircle.vroadway.ui.home.PreviewEpisodes
 import com.alphacircle.vroadway.ui.home.PreviewPodcasts
 import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.Keyline1
 import com.alphacircle.vroadway.util.LockCategoryIconButton
 import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
+import com.holix.android.bottomsheetdialog.compose.BottomSheetDialog
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -105,9 +111,22 @@ private fun CategoryPodcasts(
     topPodcasts: List<PodcastWithExtraInfo>,
     viewModel: PodcastCategoryViewModel
 ) {
+    var show by remember { mutableStateOf(false) }
+    if(show) {
+        BottomSheetDialog(onDismissRequest = { show = false }) {
+            LockCategoryGuide(
+                R.drawable.ic_money_bag,
+                stringResource(id = R.string.bottom_sheet_guide_iap),
+                stringResource(
+                    id = R.string.bottom_sheet_guide_iap_sub
+                ),
+                "결제하기"
+            )
+        }
+    }
     CategoryPodcastRow(
         podcasts = topPodcasts,
-        onTogglePodcastFollowed = viewModel::onTogglePodcastFollowed,
+        showBottomSheetDialog = {show = true},//viewModel::onTogglePodcastFollowed,
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -286,7 +305,7 @@ fun EpisodeListItem(
 @Composable
 private fun CategoryPodcastRow(
     podcasts: List<PodcastWithExtraInfo>,
-    onTogglePodcastFollowed: (String) -> Unit,
+    showBottomSheetDialog: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lastIndex = podcasts.size - 1
@@ -300,7 +319,7 @@ private fun CategoryPodcastRow(
                 podcastTitle = podcast.title,
                 podcastImageUrl = podcast.imageUrl,
                 isFollowed = isFollowed,
-                onToggleFollowClicked = { onTogglePodcastFollowed(podcast.uri) },
+                showBottomSheetDialog = { showBottomSheetDialog(podcast.uri) },
                 modifier = Modifier.width(128.dp)
             )
 
@@ -314,7 +333,7 @@ private fun TopPodcastRowItem(
     podcastTitle: String,
     isFollowed: Boolean,
     modifier: Modifier = Modifier,
-    onToggleFollowClicked: () -> Unit,
+    showBottomSheetDialog: () -> Unit,
     podcastImageUrl: String? = null,
 ) {
     Column(
@@ -341,7 +360,7 @@ private fun TopPodcastRowItem(
             }
 
             LockCategoryIconButton(
-                onClick = onToggleFollowClicked,
+                onClick = showBottomSheetDialog,
                 isLock = isFollowed,
                 modifier = Modifier.align(Alignment.BottomEnd)
             )

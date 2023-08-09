@@ -3,18 +3,27 @@ package com.alphacircle.vroadway.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,8 +59,16 @@ fun TicketGuideSlidePages() {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.White)
+            .background(Color.White, RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp))
     ) {
+//        Icon(
+//            Icons.Default.Close,
+//            contentDescription = null,
+//            modifier = Modifier
+//                .align(Alignment.End)
+//                .padding(16.dp, 0.dp)
+//                .clickable {  }
+//        )
         HorizontalPager(count = 4, state = state) { page ->
             when (page) {
                 0 -> TicketGuidePage(
@@ -84,6 +101,24 @@ fun TicketGuideSlidePages() {
             unSelectedColor = Color.Gray
         )
 
+        Spacer(modifier = Modifier.padding(8.dp))
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ){
+            GradientButton(
+                text = "보내기",
+                modifier = Modifier
+                    .fillMaxWidth(.5f)
+                    .widthIn(min = 0.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+            )
+            GradientButton(
+                text = "보내기",
+                modifier = Modifier
+                    .fillMaxWidth(.5f)
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
+            )
+        }
         Spacer(modifier = Modifier.padding(16.dp))
     }
 }
@@ -98,16 +133,15 @@ fun TicketGuidePage(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .background(Color.White)
+            .wrapContentHeight(),
     ) {
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.padding(16.dp))
         if (needTicketPopup) TicketPopupIcon(
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(120.dp, 0.dp)
         )
-        Image(painterResource(id = iconId), null, Modifier.size(120.dp))
+        Image(painterResource(id = iconId), null, Modifier.size(80.dp))
         Spacer(modifier = Modifier.padding(8.dp))
         Text(
             text = mainText,

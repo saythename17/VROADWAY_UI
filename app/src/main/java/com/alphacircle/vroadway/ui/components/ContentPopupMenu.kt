@@ -53,9 +53,7 @@ fun ContentPopupMenu(
                     icon = Icons.Filled.Info,
                     text = "Info",
                     contentDescription = "Info",
-                    onClick = {
-                        infoOnClick()
-                    }
+                    onClick = infoOnClick
                 ),
                 PopupMenuItem(
                     icon = Icons.Filled.Share,

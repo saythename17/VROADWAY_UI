@@ -130,4 +130,5 @@ dependencies {
     coreLibraryDesugaring(libs.core.jdk.desugaring)
     implementation ("com.airbnb.android:lottie-compose:6.0.1")
     implementation ("com.google.accompanist:accompanist-pager:0.22.0-rc")
+    implementation ("com.holix.android:bottomsheetdialog-compose:1.2.1")
 }
