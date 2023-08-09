@@ -41,8 +41,6 @@ fun Licenses(
     val surfaceColor = MaterialTheme.colors.surface
     val appBarColor = surfaceColor.copy(alpha = 0.87f)
 
-    val purchasedList = listOf<String>("", "")
-
     Scaffold(
         topBar = {
             TopBar(onBackPress, appBarColor, stringResource(R.string.setting_item_licenses))

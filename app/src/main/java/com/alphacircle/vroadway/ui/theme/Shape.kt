@@ -16,6 +16,7 @@
 
 package com.alphacircle.vroadway.ui.theme
 
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
 import androidx.compose.ui.unit.dp
@@ -23,5 +24,5 @@ import androidx.compose.ui.unit.dp
 val VroadwayShapes = Shapes(
     small = RoundedCornerShape(percent = 50),
     medium = RoundedCornerShape(size = 8.dp),
-    large = RoundedCornerShape(size = 0.dp)
+    large = RoundedCornerShape(size = 4.dp)
 )

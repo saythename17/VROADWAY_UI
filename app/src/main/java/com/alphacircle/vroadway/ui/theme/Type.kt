@@ -131,7 +131,7 @@ val KoreanTypography = Typography(
     h1 = TextStyle(
         fontFamily = GmarketSans,
         fontSize = 96.sp,
-        fontWeight = FontWeight.Light,
+        fontWeight = FontWeight.Medium,
         lineHeight = 117.sp,
         letterSpacing = (-1.5).sp
     ),
@@ -144,9 +144,9 @@ val KoreanTypography = Typography(
     ),
     h3 = TextStyle(
         fontFamily = GmarketSans,
-        fontSize = 48.sp,
+        fontSize = 20.sp,
         fontWeight = FontWeight.Medium,
-        lineHeight = 59.sp
+        lineHeight = 24.sp
     ),
     h4 = TextStyle(
         fontFamily = GmarketSans,

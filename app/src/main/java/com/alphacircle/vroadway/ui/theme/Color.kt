@@ -38,8 +38,8 @@ fun Colors.compositedOnSurface(alpha: Float): Color {
     return onSurface.copy(alpha = alpha).compositeOver(surface)
 }
 
-val PrimaryBlue = Color(0xFF1877F2)
-val OnPrimaryDarkGray = Color(0xFF383838)
+val PrimaryBlue = Color(0xFF4A8BE0)
+val OnPrimaryDarkGray = Color(0xFF3A3A3A)
 val SubBlue = Color(0xFF7B9CFF)
 val PrimaryPurple = Color(0xFF7158E2)
 val SubPurple = Color(0xFFAF9CF6)
@@ -47,8 +47,9 @@ val Warning = Color(0xFF2929)
 
 val VroadwayColors = darkColors(
     primary = PrimaryBlue,
-    primaryVariant = PrimaryBlue,
-    secondary = SubBlue,
+    primaryVariant = SubBlue,
+    secondary = PrimaryPurple,
+    secondaryVariant = SubPurple,
     onSecondary = OnPrimaryDarkGray,
     error = Warning,
 )

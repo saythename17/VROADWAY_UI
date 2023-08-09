@@ -29,6 +29,18 @@
     <string name="no_download_list">다운로드한 컨텐츠가 없습니다.</string>
 
     <string name="home_discover">Discover</string>
+    <string name="bottom_sheet_guide_iap">한번의 결제로 다~ 즐기기</string>
+    <string name="bottom_sheet_guide_iap_sub">카테고리 내 모든 컨텐츠 관람 가능</string>
+    <string name="bottom_sheet_guide_ticket">티켓이 있으신가요?</string>
+    <string name="bottom_sheet_guide_ticket_sub">구매한 티켓이 있다면 티켓 등록 클릭!</string>
+    <string name="bottom_sheet_guide_ticket_info">티켓에 대한 자세한 사항은&#10;메뉴 > Guides &amp; FAQ 참조!</string>
+    <string name="bottom_sheet_guide_both">티켓이 있으신가요?</string>
+    <string name="bottom_sheet_guide_both_sub">구매한 티켓이 있다면 티켓 네 클릭!&#10;티켓이 없다면 아니요 클릭!</string>
+    <string name="bottom_sheet_guide_ticket_register_1">웹 사이트에 접속하여 로그인해 주세요</string>
+    <string name="bottom_sheet_guide_ticket_register_popup">CLICK! 로그인하러 가기!</string>
+    <string name="bottom_sheet_guide_ticket_register_2">티켓에 기재된 시리얼 넘버를 등록해 주세요</string>
+    <string name="bottom_sheet_guide_ticket_register_3">웹 사이트에서 로그인한 계정과&#10;동일한 계정으로 앱에서 로그인해 주세요</string>
+    <string name="bottom_sheet_guide_ticket_register_4">이제 VR콘텐츠를 다운받아&#10;즐기실 수 있습니다!</string>
 
     <string name="updated_longer">Updated a while ago</string>
     <plurals name="updated_weeks_ago">
