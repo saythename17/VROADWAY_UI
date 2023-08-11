@@ -3,17 +3,12 @@ package com.alphacircle.vroadway.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -23,12 +18,12 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,13 +41,17 @@ import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.ui.theme.VroadwayShapes
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
-@Preview(showBackground = true)
 @Composable
-fun TicketGuideSlidePages() {
+fun TicketGuideSlidePages(
+    closePages: () -> Unit,
+) {
     val state = rememberPagerState()
+    val animationScope = rememberCoroutineScope()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -94,29 +93,46 @@ fun TicketGuideSlidePages() {
             }
         }
 
+
         DotIndicator(
             totalDots = 4,
             selectedIndex = state.currentPage,
             selectedColor = VroadwayColors.primary,
             unSelectedColor = Color.Gray
         )
-
         Spacer(modifier = Modifier.padding(8.dp))
-        Box(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-        ){
+        ) {
             GradientButton(
-                text = "보내기",
+                text = "이전",
                 modifier = Modifier
-                    .fillMaxWidth(.5f)
+                    .weight(1.0f, true)
                     .widthIn(min = 0.dp)
                     .padding(horizontal = 8.dp, vertical = 8.dp),
+                inActive = state.currentPage == 0,
+                onClick = {
+                    animationScope.launch {
+                        if (state.currentPage > 0) {
+                            state.animateScrollToPage(state.currentPage - 1)
+                        }
+                    }
+                }
             )
             GradientButton(
-                text = "보내기",
+                text = if (state.currentPage === 3) "확인" else "다음",
                 modifier = Modifier
-                    .fillMaxWidth(.5f)
+                    .weight(1.0f, true)
                     .padding(horizontal = 8.dp, vertical = 8.dp),
+                onClick = {
+                    animationScope.launch {
+                        if (state.currentPage < 3) {
+                            state.animateScrollToPage(state.currentPage + 1)
+                        } else {
+                            closePages()
+                        }
+                    }
+                }
             )
         }
         Spacer(modifier = Modifier.padding(16.dp))
@@ -136,11 +152,13 @@ fun TicketGuidePage(
             .wrapContentHeight(),
     ) {
         Spacer(modifier = Modifier.padding(16.dp))
-        if (needTicketPopup) TicketPopupIcon(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(120.dp, 0.dp)
-        )
+        when {
+            needTicketPopup -> TicketPopupIcon(
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(120.dp, 0.dp)
+            )
+        }
         Image(painterResource(id = iconId), null, Modifier.size(80.dp))
         Spacer(modifier = Modifier.padding(8.dp))
         Text(
@@ -189,3 +207,9 @@ fun LinkToWebPopup(modifier: Modifier) {
     }
 }
 
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewTicketGuideSlidePages() {
+    TicketGuideSlidePages {}
+}

@@ -46,7 +46,7 @@ fun GradientButton(
         shape = VroadwayShapes.medium,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
         contentPadding = PaddingValues(),
-        onClick = { onClick() },
+        onClick = onClick,
     ) {
         val activeContainerModifier = Modifier
             .background(gradient)
