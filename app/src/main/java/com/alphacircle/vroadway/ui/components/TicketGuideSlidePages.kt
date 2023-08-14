@@ -153,7 +153,7 @@ fun TicketGuidePage(
     ) {
         Spacer(modifier = Modifier.padding(16.dp))
         when {
-            needTicketPopup -> TicketPopupIcon(
+            needTicketPopup -> LinkToWebPopup(
                 modifier = Modifier
                     .align(Alignment.End)
                     .padding(120.dp, 0.dp)
@@ -179,7 +179,7 @@ fun LinkToWebPopup(modifier: Modifier) {
         Icon(
             imageVector = Icons.Default.Info,
             contentDescription = null,
-            tint = VroadwayColors.primary,
+            tint = Color.LightGray,
             modifier = Modifier
                 .constrainAs(icon) { }
                 .clickable { popupExpended = true }

@@ -1,7 +1,6 @@
 package com.alphacircle.vroadway.ui.home.category
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -42,9 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -68,6 +63,8 @@ import com.alphacircle.vroadway.data.Podcast
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.ui.components.ContentPopupMenu
 import com.alphacircle.vroadway.ui.components.LockCategoryGuide
+import com.alphacircle.vroadway.ui.components.TicketGuide
+import com.alphacircle.vroadway.ui.components.TicketGuideSlidePages
 import com.alphacircle.vroadway.ui.home.PreviewEpisodes
 import com.alphacircle.vroadway.ui.home.PreviewPodcasts
 import com.alphacircle.vroadway.ui.theme.AppTheme
@@ -111,22 +108,28 @@ private fun CategoryPodcasts(
     topPodcasts: List<PodcastWithExtraInfo>,
     viewModel: PodcastCategoryViewModel
 ) {
-    var show by remember { mutableStateOf(false) }
-    if(show) {
-        BottomSheetDialog(onDismissRequest = { show = false }) {
-            LockCategoryGuide(
-                R.drawable.ic_money_bag,
-                stringResource(id = R.string.bottom_sheet_guide_iap),
-                stringResource(
-                    id = R.string.bottom_sheet_guide_iap_sub
-                ),
-                "결제하기"
-            )
+    var lockCategoryGuideShow by remember { mutableStateOf(false) }
+    var ticketGuideShow by remember { mutableStateOf(false) }
+
+    if (lockCategoryGuideShow) {
+        BottomSheetDialog(onDismissRequest = { lockCategoryGuideShow = false }) {
+            TicketGuide(
+                ticketGuideShow = { ticketGuideShow = true },
+                onDismissRequest = { lockCategoryGuideShow = false })
         }
     }
+
+    if (ticketGuideShow) {
+        BottomSheetDialog(onDismissRequest = { ticketGuideShow = false }) {
+            TicketGuideSlidePages { ticketGuideShow = false }
+        }
+    }
+
     CategoryPodcastRow(
         podcasts = topPodcasts,
-        showBottomSheetDialog = {show = true},//viewModel::onTogglePodcastFollowed,
+        showBottomSheetDialog = {
+            lockCategoryGuideShow = true
+        },//viewModel::onTogglePodcastFollowed,
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -208,7 +211,7 @@ fun EpisodeListItem(
                     centerVerticallyTo(image)
                     centerHorizontallyTo(image)
                 }
-                .graphicsLayer(alpha = 0.8f)
+//                .graphicsLayer(alpha = 0.8f)
         )
 
         Text(
@@ -227,7 +230,7 @@ fun EpisodeListItem(
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                text = podcast.author.toString(),
+                text = podcast.author + "MB",
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.caption,
@@ -242,19 +245,20 @@ fun EpisodeListItem(
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                text = when {
-                    episode.duration != null -> {
-                        // If we have the duration, we combine the date/duration via a
-                        // formatted string
-                        stringResource(
-                            R.string.episode_date_duration,
-                            MediumDateFormatter.format(episode.published),
-                            episode.duration.toMinutes().toInt()
-                        )
-                    }
-                    // Otherwise we just use the date
-                    else -> MediumDateFormatter.format(episode.published)
-                },
+                text = "00: 41: 22",
+//                when {
+//                    episode.duration != null -> {
+//                        // If we have the duration, we combine the date/duration via a
+//                        // formatted string
+//                        stringResource(
+//                            R.string.episode_date_duration,
+//                            MediumDateFormatter.format(episode.published),
+//                            episode.duration.toMinutes().toInt()
+//                        )
+//                    }
+//                    // Otherwise we just use the date
+//                    else -> MediumDateFormatter.format(episode.published)
+//                },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.caption,

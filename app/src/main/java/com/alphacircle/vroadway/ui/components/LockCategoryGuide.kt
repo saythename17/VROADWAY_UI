@@ -4,22 +4,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,61 +39,61 @@ import com.alphacircle.vroadway.ui.theme.KoreanTypography
 import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.ui.theme.VroadwayShapes
 
-@Preview(showBackground = true)
-@Composable
-fun InputFeedbackView() {
-    var text by remember { mutableStateOf("") }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(0.dp, 24.dp)
-            .background(Color.White, RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp))
-    ) {
-//        Icon(
-//            Icons.Default.Close,
-//            contentDescription = null,
-//            modifier = Modifier
-//                .align(Alignment.End)
-//                .padding(16.dp, 0.dp)
-//                .clickable {  }
-//        )
-        Spacer(modifier = Modifier.padding(16.dp))
-        Text(
-            text = stringResource(id = R.string.bottom_sheet_feedback),
-            color = Color.Black,
-            style = KoreanTypography.h5
-        )
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it },
-            placeholder = {
-                Text(
-                    stringResource(id = R.string.bottom_sheet_feedback_hint),
-                    style = KoreanTypography.body2
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp)
-                .padding(32.dp, 16.dp),
-            shape = VroadwayShapes.medium,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = Color.Black,
-                backgroundColor = Color.White,
-                cursorColor = VroadwayColors.primary,
-            )
-        )
-        GradientButton(
-            text = "보내기",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 8.dp),
-        )
-        Spacer(modifier = Modifier.padding(8.dp))
-    }
+@Composable
+fun TicketGuide(
+    ticketGuideShow: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    LockCategoryGuide(
+        R.drawable.ic_ticket,
+        stringResource(id = R.string.bottom_sheet_guide_ticket),
+        stringResource(
+            id = R.string.bottom_sheet_guide_ticket_sub
+        ),
+        stringResource(id = R.string.ticket_button_text),
+        isTicketGuide = true,
+        ticketGuideShow = ticketGuideShow,
+        onDismissRequest = onDismissRequest
+    )
+}
+
+@Composable
+fun IAPGuide(
+    onIAP: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    LockCategoryGuide(
+        R.drawable.ic_money_bag,
+        stringResource(id = R.string.bottom_sheet_guide_iap),
+        stringResource(
+            id = R.string.bottom_sheet_guide_iap_sub
+        ),
+        buttonText = "결제",
+        onIAP = onIAP,
+        onDismissRequest = onDismissRequest
+    )
+}
+
+@Composable
+fun BothGuide(
+    onIAP: () -> Unit,
+    ticketGuideShow: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    LockCategoryGuide(
+        R.drawable.ic_ticket,
+        stringResource(id = R.string.bottom_sheet_guide_both),
+        stringResource(
+            id = R.string.bottom_sheet_guide_both_sub
+        ),
+        buttonText = stringResource(id = R.string.both_button_text_no),
+        buttonTextRight = stringResource(id = R.string.both_button_text_yes),
+        isTicketGuide = true,
+        onIAP = onIAP,
+        ticketGuideShow = ticketGuideShow,
+        onDismissRequest = onDismissRequest
+    )
 }
 
 @Composable
@@ -104,7 +102,11 @@ fun LockCategoryGuide(
     mainText: String,
     subText: String,
     buttonText: String,
-    needTicketPopup: Boolean = false
+    buttonTextRight: String? = null,
+    isTicketGuide: Boolean = false,
+    onIAP: () -> Unit = {},
+    ticketGuideShow: () -> Unit = {},
+    onDismissRequest: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -115,15 +117,7 @@ fun LockCategoryGuide(
             .background(Color.White, RoundedCornerShape(24.dp, 24.dp, 0.dp, 0.dp)),
     ) {
         Spacer(modifier = Modifier.padding(16.dp))
-//        Icon(
-//            Icons.Default.Close,
-//            contentDescription = null,
-//            modifier = Modifier
-//                .align(Alignment.End)
-//                .padding(16.dp, 0.dp)
-//                .clickable {  }
-//        )
-        if (needTicketPopup) TicketPopupIcon(
+        if (isTicketGuide) TicketPopupIcon(
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(120.dp, 0.dp)
@@ -139,12 +133,47 @@ fun LockCategoryGuide(
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        GradientButton(
-            text = "보내기",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 8.dp),
-        )
+
+        when {
+            buttonTextRight == null -> GradientButton(
+                text = buttonText,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                onClick = {
+                    onDismissRequest()
+                    if (isTicketGuide) ticketGuideShow()
+                    else onIAP()
+                }
+            )
+
+            else -> Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                GradientButton(
+                    text = buttonText,
+                    modifier = Modifier
+                        .weight(1.0f, true)
+                        .widthIn(min = 0.dp)
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    onClick = {
+                        onDismissRequest()
+                        onIAP()
+                    }
+                )
+                GradientButton(
+                    text = buttonTextRight,
+                    modifier = Modifier
+                        .weight(1.0f, true)
+                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                    onClick = {
+                        onDismissRequest()
+                        ticketGuideShow()
+                    }
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.padding(8.dp))
     }
 }
@@ -191,23 +220,14 @@ fun TicketPopupIcon(modifier: Modifier) {
 @Composable
 fun PreviewGuide() {
     Column() {
-        LockCategoryGuide(
-            R.drawable.ic_money_bag,
-            stringResource(id = R.string.bottom_sheet_guide_iap),
-            stringResource(
-                id = R.string.bottom_sheet_guide_iap_sub
-            ),
-            buttonText = "결제"
-        )
+        IAPGuide(onIAP = { /*TODO*/ }) {}
 
-        LockCategoryGuide(
-            R.drawable.ic_ticket,
-            stringResource(id = R.string.bottom_sheet_guide_ticket),
-            stringResource(
-                id = R.string.bottom_sheet_guide_ticket_sub
-            ),
-            buttonText = "티켓 등록",
-            true
-        )
+        TicketGuide(ticketGuideShow = { /*TODO*/ }) {}
     }
+}
+
+@Preview
+@Composable
+fun PreviewGuideBoth() {
+    BothGuide(onIAP = { /*TODO*/ }, ticketGuideShow = { /*TODO*/ }) {}
 }

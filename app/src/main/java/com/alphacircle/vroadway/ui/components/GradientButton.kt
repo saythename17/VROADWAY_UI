@@ -52,7 +52,7 @@ fun GradientButton(
             .background(gradient)
             .then(modifier)
         val inActiveContainerModifier = Modifier
-            .background(Color.Gray)
+            .background(Color.LightGray)
             .then(modifier)
         Box(
             modifier = if(inActive) inActiveContainerModifier else activeContainerModifier,

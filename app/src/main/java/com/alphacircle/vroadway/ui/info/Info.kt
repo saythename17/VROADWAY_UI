@@ -64,7 +64,6 @@ fun Info(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         val (
             backButton, bgImage, infoContainer
@@ -76,7 +75,7 @@ fun Info(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(360.dp)
                 .constrainAs(bgImage) {
                     start.linkTo(parent.start)
                 },
@@ -86,8 +85,8 @@ fun Info(
         BackButton(
             onBackPress = onBackPress,
             modifier = Modifier.constrainAs(backButton) {
-            start.linkTo(parent.start, 8.dp)
-            top.linkTo(parent.top, 32.dp)
+                start.linkTo(parent.start, 8.dp)
+                top.linkTo(parent.top, 32.dp)
             }
         )
 
@@ -103,7 +102,6 @@ fun Info(
                 }
                 .fillMaxHeight()
         )
-
 
 
     }
@@ -129,7 +127,9 @@ fun InfoSheet(modifier: Modifier) {
     Column(
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(32.dp)) {
+        Column(modifier = Modifier
+            .padding(40.dp)
+            .verticalScroll(rememberScrollState())) {
             Text(
                 text = "Newjeans",
                 modifier = Modifier

@@ -16,6 +16,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +42,8 @@ fun ContentPopupMenu(
     modifier: Modifier,
     infoOnClick: () -> Unit
 ) {
+    var dialogVisible by remember { mutableStateOf(false) }
+    
     Box(
         modifier = modifier
     ) {
@@ -65,7 +71,7 @@ fun ContentPopupMenu(
                     icon = Icons.Filled.Delete,
                     text = "Delete",
                     contentDescription = "Delete",
-                    onClick = {}
+                    onClick = { dialogVisible = true }
                 )
             )
             items.forEachIndexed { _, item ->
@@ -122,8 +128,7 @@ fun ContentPopupMenu(
                 }
             }
         }
-
-
+        DeleteCancelableToastDialog(onDismissRequest = { dialogVisible = false }, show = dialogVisible)
     }
 }
 
