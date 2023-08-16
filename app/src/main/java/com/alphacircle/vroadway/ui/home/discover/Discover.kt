@@ -42,11 +42,13 @@ import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,6 +59,7 @@ import com.alphacircle.vroadway.data.Category
 import com.alphacircle.vroadway.ui.components.LockCategoryGuide
 import com.alphacircle.vroadway.ui.home.category.PodcastCategory
 import com.alphacircle.vroadway.ui.theme.Keyline1
+import com.alphacircle.vroadway.util.NetworkModule
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -69,6 +72,11 @@ fun Discover(
     val viewState by viewModel.state.collectAsStateWithLifecycle()
 
     val selectedCategory = viewState.selectedCategory
+
+    val categoryList = remember {
+        mutableStateListOf<String>()
+    }
+    NetworkModule.getJSONData(categoryList, context = LocalContext.current)
 
     if (viewState.categories.isNotEmpty() && selectedCategory != null) {
         Column(modifier) {
