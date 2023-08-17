@@ -21,6 +21,7 @@ import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.Graph
 import com.alphacircle.vroadway.data.Category
 import com.alphacircle.vroadway.data.CategoryStore
+import com.alphacircle.vroadway.data.category.Depth1Category
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
@@ -71,3 +72,5 @@ data class DiscoverViewState(
     val categories: List<Category> = emptyList(),
     val selectedCategory: Category? = null
 )
+
+

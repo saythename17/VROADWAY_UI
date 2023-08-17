@@ -75,7 +75,6 @@ object NetworkModule {
             .create(VroadwayAPI::class.java)
     }
 
-    @Provides
     @Singleton
     fun getAllCategories(list: MutableList<Category>, context: Context) {
         val call: Call<CategoryResponse> = createAPI().getCategories()
@@ -97,8 +96,8 @@ object NetworkModule {
 
                     var responseList: CategoryResponse = response.body()!!
 
-                    for (i in 0 until responseList.categoryList.size) {
-                        val category = Category(name = responseList.categoryList[i].name, id = responseList.categoryList[i].id)
+                    for (i in responseList.categoryList) {
+                        val category = Category(name = i.name, id = i.id)
                         list.add(category)
                     }
                 } else { // code == 400

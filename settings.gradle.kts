@@ -21,6 +21,21 @@ pluginManagement {
         google()
         mavenCentral()
     }
+
+    plugins {
+        id ("com.android.application") version "7.1.0-alpha06"
+        id ("com.android.library") version "7.1.0-alpha06"
+        // No need to define the Hilt plugin here.
+    }
+
+    resolutionStrategy {
+        eachPlugin {
+            // Use `resolutionStrategy` to define the Hilt plugin and its coordinate
+            if (requested.id.id == "dagger.hilt.android.plugin") {
+                useModule("com.google.dagger:hilt-android-gradle-plugin:2.38.1")
+            }
+        }
+    }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -36,4 +51,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Vroadway"
 include(":app")
+
 

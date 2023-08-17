@@ -24,7 +24,7 @@ import dagger.hilt.android.HiltAndroidApp
 /**
  * Application which sets up our dependency [Graph] with a context.
  */
-@HiltAndroidApp
+
 class VroadwayApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
