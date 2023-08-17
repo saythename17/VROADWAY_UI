@@ -1,4 +1,4 @@
-package com.alphacircle.vroadway.util
+package com.alphacircle.vroadway.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.MutableLiveData

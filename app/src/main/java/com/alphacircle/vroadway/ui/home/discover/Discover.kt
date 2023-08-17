@@ -17,7 +17,6 @@
 package com.alphacircle.vroadway.ui.home.discover
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,11 +25,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomSheetScaffold
-import androidx.compose.material.BottomSheetState
-import androidx.compose.material.BottomSheetValue
-import androidx.compose.material.DrawerState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
@@ -38,25 +32,17 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Tab
 import androidx.compose.material.TabPosition
 import androidx.compose.material.Text
-import androidx.compose.material.rememberBottomSheetScaffoldState
-import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.data.Category
-import com.alphacircle.vroadway.ui.components.LockCategoryGuide
 import com.alphacircle.vroadway.ui.home.category.PodcastCategory
 import com.alphacircle.vroadway.ui.theme.Keyline1
 import com.alphacircle.vroadway.util.NetworkModule
@@ -74,20 +60,29 @@ fun Discover(
     val selectedCategory = viewState.selectedCategory
 
     val categoryList = remember {
-        mutableStateListOf<String>()
+        mutableStateListOf<Category>()
     }
-    NetworkModule.getJSONData(categoryList, context = LocalContext.current)
+
+    NetworkModule.getAllCategories(categoryList, context = LocalContext.current)
+
 
     if (viewState.categories.isNotEmpty() && selectedCategory != null) {
         Column(modifier) {
             Spacer(Modifier.height(8.dp))
 
             CategoryTabs(
-                categories = viewState.categories,
+                categories = categoryList,
                 selectedCategory = selectedCategory,
                 onCategorySelected = viewModel::onCategorySelected,
                 modifier = Modifier.fillMaxWidth()
             )
+
+//            CategoryTabs(
+//                categories = viewState.categories,
+//                selectedCategory = selectedCategory,
+//                onCategorySelected = viewModel::onCategorySelected,
+//                modifier = Modifier.fillMaxWidth()
+//            )
 
             Spacer(Modifier.height(8.dp))
 

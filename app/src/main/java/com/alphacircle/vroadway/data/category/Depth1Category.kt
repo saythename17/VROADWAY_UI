@@ -1,12 +1,13 @@
 package com.alphacircle.vroadway.data.category
+import com.alphacircle.vroadway.data.Board
 import com.google.gson.annotations.SerializedName
 
 data class CategoryResponse(
-    val categoryList: List<Depth1Category>
+    @SerializedName("items") val categoryList: List<Depth1Category>
 )
 
 data class Depth1Category(
-    var id: Int = 0,
+    var id: Long = 0,
     var parentId: Int = 0,
     var name: String = "",
     var accessType: String = "",
