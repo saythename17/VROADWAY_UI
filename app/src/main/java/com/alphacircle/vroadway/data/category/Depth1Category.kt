@@ -10,7 +10,7 @@ data class Depth1Category(
     var id: Long = 0,
     var parentId: Int = 0,
     var name: String = "",
-    var accessType: String = "",
+    var accessType: String? = null,
     var sorting: Int = 0,
     var level: Int = 0,
     @SerializedName("children") var depth2CategoryList: List<Depth2Category> = listOf()

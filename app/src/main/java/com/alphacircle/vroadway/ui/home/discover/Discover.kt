@@ -16,7 +16,9 @@
 
 package com.alphacircle.vroadway.ui.home.discover
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,8 +36,6 @@ import androidx.compose.material.TabPosition
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,10 +43,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.data.Category
+import com.alphacircle.vroadway.data.category.Depth1Category
 import com.alphacircle.vroadway.ui.home.category.PodcastCategory
 import com.alphacircle.vroadway.ui.theme.Keyline1
-import com.alphacircle.vroadway.util.NetworkModule
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Discover(
@@ -59,11 +60,9 @@ fun Discover(
 
     val selectedCategory = viewState.selectedCategory
 
-    val categoryList = remember {
-        mutableStateListOf<Category>()
-    }
-
-    NetworkModule.getAllCategories(categoryList, context = LocalContext.current)
+    val myViewModel: MyViewModel = MyViewModel(LocalContext.current)
+    val myViewState by myViewModel.state.collectAsStateWithLifecycle()
+    val mySelectedCategory = myViewState.selectedCategory
 
 
     if (viewState.categories.isNotEmpty() && selectedCategory != null) {
@@ -71,18 +70,21 @@ fun Discover(
             Spacer(Modifier.height(8.dp))
 
             CategoryTabs(
-                categories = categoryList,
+                categories = viewState.categories,
                 selectedCategory = selectedCategory,
                 onCategorySelected = viewModel::onCategorySelected,
                 modifier = Modifier.fillMaxWidth()
             )
 
-//            CategoryTabs(
-//                categories = viewState.categories,
-//                selectedCategory = selectedCategory,
-//                onCategorySelected = viewModel::onCategorySelected,
-//                modifier = Modifier.fillMaxWidth()
-//            )
+//            if (mySelectedCategory != null) {
+                MyCategoryTabs(
+                    categories = myViewModel.categories,
+                    selectedCategory = mySelectedCategory,
+                    onCategorySelected = myViewModel::onCategorySelected,
+                    modifier = Modifier.fillMaxWidth()
+                )
+//            }
+
 
             Spacer(Modifier.height(8.dp))
 
@@ -139,6 +141,36 @@ private fun CategoryTabs(
 }
 
 @Composable
+private fun MyCategoryTabs(
+    categories: List<Depth1Category>,
+    selectedCategory: Depth1Category?,
+    onCategorySelected: (Depth1Category) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val selectedIndex = categories.indexOfFirst { it == selectedCategory }
+    ScrollableTabRow(
+        selectedTabIndex = 0,
+        divider = {}, /* Disable the built-in divider */
+        edgePadding = Keyline1,
+        indicator = emptyTabIndicator,
+        modifier = modifier
+    ) {
+        categories.forEachIndexed { index, category ->
+            Tab(
+                selected = index == selectedIndex,
+                onClick = { onCategorySelected(category) }
+            ) {
+                ChoiceCategoryChip(
+                    text = category.name,
+                    selected = index == selectedIndex,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ChoiceCategoryChip(
     text: String,
     selected: Boolean,
@@ -157,7 +189,7 @@ private fun ChoiceCategoryChip(
         modifier = modifier
     ) {
         Text(
-            text = text,
+            text = selected.toString(),
             style = MaterialTheme.typography.body2,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
@@ -171,10 +203,4 @@ fun PreviewChip() {
         ChoiceCategoryChip(text = "Seventeen", selected = true)
         ChoiceCategoryChip(text = "Seventeen", selected = false)
     }
-}
-
-@Preview(showSystemUi = true)
-@Composable()
-fun PreviewBottomSheet() {
-
 }

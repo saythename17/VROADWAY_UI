@@ -1,6 +1,5 @@
 package com.alphacircle.vroadway.ui.home.my
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +13,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,13 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.data.Category
 import com.alphacircle.vroadway.ui.components.NoListView
-import com.alphacircle.vroadway.ui.home.category.EpisodeList
-import com.alphacircle.vroadway.ui.home.category.PodcastCategoryViewModel
 import com.alphacircle.vroadway.ui.home.discover.DiscoverViewModel
-import com.alphacircle.vroadway.ui.theme.AppTheme
-import com.alphacircle.vroadway.ui.theme.KoreanTypography
-import com.alphacircle.vroadway.ui.theme.VroadwayColors
-import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
 
 @Composable
 fun My(
@@ -37,7 +29,7 @@ fun My(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        TitleBar(title = stringResource(id = R.string.my_download_title))
+        TitleBar(title = stringResource(id = R.string.home_my_collections))
 
         val viewModel: DiscoverViewModel = viewModel()
         val viewState by viewModel.state.collectAsStateWithLifecycle()
@@ -99,7 +91,7 @@ fun TitleBar(title: String) {
 @Preview
 @Composable
 fun PreviewTitleBar() {
-    TitleBar(stringResource(id = R.string.my_download_title))
+    TitleBar(stringResource(id = R.string.home_my_collections))
 }
 
 @Preview

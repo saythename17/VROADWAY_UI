@@ -25,7 +25,7 @@
     <string name="latest_episodes">Latest episodes</string>
 
     <string name="home_my">My</string>
-    <string name="my_download_title">Downloads List</string>
+    <string name="home_my_collections">Collections</string>
     <string name="no_download_list">다운로드한 컨텐츠가 없습니다.</string>
 
     <string name="home_discover">Discover</string>

@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -79,7 +78,7 @@ fun PurchasedItem(
                 .weight(1f)
                 .padding(24.dp)
         ) {
-            CategoryInfo(stringResource(id = R.string.my_download_title), "2023-05-19 10:01:19")
+            CategoryInfo(stringResource(id = R.string.home_my_collections), "2023-05-19 10:01:19")
         }
 
         CategoryImage(Modifier.padding(16.dp), "https://kpopanswers.com/wp-content/uploads/2023/04/how-old-are-newjeans-members.jpg")
