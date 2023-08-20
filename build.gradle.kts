@@ -17,7 +17,6 @@
 plugins {
     alias(libs.plugins.gradle.versions)
     alias(libs.plugins.version.catalog.update)
-    id("com.google.dagger.hilt.android") version "2.44" apply false
 }
 
 apply("${project.rootDir}/buildscripts/toml-updater-config.gradle")

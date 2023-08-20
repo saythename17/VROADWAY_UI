@@ -37,13 +37,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.data.Category
-import com.alphacircle.vroadway.data.category.Depth1Category
+import com.alphacircle.vroadway.data.category.HighLevelCategory
 import com.alphacircle.vroadway.ui.home.category.PodcastCategory
 import com.alphacircle.vroadway.ui.theme.Keyline1
 
@@ -59,13 +58,8 @@ fun Discover(
     val viewState by viewModel.state.collectAsStateWithLifecycle()
 
     val selectedCategory = viewState.selectedCategory
-
-    val myViewModel: MyViewModel = MyViewModel(LocalContext.current)
-    val myViewState by myViewModel.state.collectAsStateWithLifecycle()
-    val mySelectedCategory = myViewState.selectedCategory
-
-
     if (viewState.categories.isNotEmpty() && selectedCategory != null) {
+
         Column(modifier) {
             Spacer(Modifier.height(8.dp))
 
@@ -76,23 +70,13 @@ fun Discover(
                 modifier = Modifier.fillMaxWidth()
             )
 
-//            if (mySelectedCategory != null) {
-                MyCategoryTabs(
-                    categories = myViewModel.categories,
-                    selectedCategory = mySelectedCategory,
-                    onCategorySelected = myViewModel::onCategorySelected,
-                    modifier = Modifier.fillMaxWidth()
-                )
-//            }
-
-
             Spacer(Modifier.height(8.dp))
 
             Crossfade(
                 targetState = selectedCategory,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f), label = ""
             ) { category ->
                 /**
                  * TODO, need to think about how this will scroll within the outer VerticalScroller
@@ -112,9 +96,9 @@ private val emptyTabIndicator: @Composable (List<TabPosition>) -> Unit = {}
 
 @Composable
 private fun CategoryTabs(
-    categories: List<Category>,
-    selectedCategory: Category,
-    onCategorySelected: (Category) -> Unit,
+    categories: List<HighLevelCategory>,
+    selectedCategory: HighLevelCategory,
+    onCategorySelected: (HighLevelCategory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selectedIndex = categories.indexOfFirst { it == selectedCategory }
@@ -142,9 +126,9 @@ private fun CategoryTabs(
 
 @Composable
 private fun MyCategoryTabs(
-    categories: List<Depth1Category>,
-    selectedCategory: Depth1Category?,
-    onCategorySelected: (Depth1Category) -> Unit,
+    categories: List<HighLevelCategory>,
+    selectedCategory: HighLevelCategory?,
+    onCategorySelected: (HighLevelCategory) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selectedIndex = categories.indexOfFirst { it == selectedCategory }
@@ -189,7 +173,7 @@ private fun ChoiceCategoryChip(
         modifier = modifier
     ) {
         Text(
-            text = selected.toString(),
+            text = text,
             style = MaterialTheme.typography.body2,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
