@@ -1,5 +1,6 @@
 package com.alphacircle.vroadway.ui.home.category
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -61,22 +62,28 @@ import com.alphacircle.vroadway.data.Episode
 import com.alphacircle.vroadway.data.EpisodeToPodcast
 import com.alphacircle.vroadway.data.Podcast
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
+import com.alphacircle.vroadway.data.category.Asset
+import com.alphacircle.vroadway.data.category.Content
+import com.alphacircle.vroadway.data.category.LowLevelCategory
 import com.alphacircle.vroadway.ui.components.ContentPopupMenu
-import com.alphacircle.vroadway.ui.components.LockCategoryGuide
 import com.alphacircle.vroadway.ui.components.TicketGuide
 import com.alphacircle.vroadway.ui.components.TicketGuideSlidePages
+import com.alphacircle.vroadway.ui.home.PreviewContent
 import com.alphacircle.vroadway.ui.home.PreviewEpisodes
 import com.alphacircle.vroadway.ui.home.PreviewPodcasts
 import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.Keyline1
 import com.alphacircle.vroadway.util.LockCategoryIconButton
+import com.alphacircle.vroadway.util.fileSizeConverter
+import com.alphacircle.vroadway.util.runningTimeConverter
 import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
 import com.holix.android.bottomsheetdialog.compose.BottomSheetDialog
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 @Composable
-fun PodcastCategory(
+fun VRCategory(
+    lowLevelCategoryList: List<LowLevelCategory>,
     categoryId: Long,
     navigateToPlayer: (String) -> Unit,
     navigateToInfo: () -> Unit,
@@ -86,10 +93,10 @@ fun PodcastCategory(
      * CategoryEpisodeListViewModel requires the category as part of it's constructor, therefore
      * we need to assist with it's instantiation with a custom factory and custom key.
      */
-    val viewModel: PodcastCategoryViewModel = viewModel(
+    val viewModel: VRCategoryContentViewModel = viewModel(
         // We use a custom key, using the category parameter
         key = "category_list_$categoryId",
-        factory = viewModelProviderFactoryOf { PodcastCategoryViewModel(categoryId) }
+        factory = viewModelProviderFactoryOf { VRCategoryContentViewModel(categoryId) }
     )
 
     val viewState by viewModel.state.collectAsStateWithLifecycle()
@@ -97,16 +104,18 @@ fun PodcastCategory(
     /**
      * TODO: reset scroll position when category changes
      */
+    Log.println(Log.DEBUG, "VRCategory", "viewState.contents: ${viewState.contents.size}")
     Column(modifier = modifier) {
-        CategoryPodcasts(viewState.topPodcasts, viewModel)
-        EpisodeList(viewState.episodes, navigateToPlayer, navigateToInfo)
+        CategoryPodcasts(lowLevelCategoryList, viewState.podCasts,  viewModel)
+        EpisodeList(contents = viewState.contents, navigateToPlayer = navigateToPlayer, navigateToInfo = navigateToInfo)
     }
 }
 
 @Composable
 private fun CategoryPodcasts(
+    lowLevelCategories: List<LowLevelCategory>,
     topPodcasts: List<PodcastWithExtraInfo>,
-    viewModel: PodcastCategoryViewModel
+    viewModel: VRCategoryContentViewModel
 ) {
     var lockCategoryGuideShow by remember { mutableStateOf(false) }
     var ticketGuideShow by remember { mutableStateOf(false) }
@@ -136,7 +145,8 @@ private fun CategoryPodcasts(
 
 @Composable
 fun EpisodeList(
-    episodes: List<EpisodeToPodcast>,
+    contents: List<Content>,
+    asset: List<Asset> = listOf(),
     navigateToPlayer: (String) -> Unit,
     navigateToInfo: () -> Unit
 ) {
@@ -145,10 +155,10 @@ fun EpisodeList(
         verticalArrangement = Arrangement.Center
     ) {
 
-        items(episodes, key = { it.episode.uri }) { item ->
-            EpisodeListItem(
-                episode = item.episode,
-                podcast = item.podcast,
+        items(contents, key = { it.id }) { item ->
+            ContentListItem(
+                content = item,
+                asset = asset,
                 onClick = navigateToPlayer,
                 infoOnClick = navigateToInfo,
                 modifier = Modifier.fillParentMaxWidth()
@@ -158,9 +168,9 @@ fun EpisodeList(
 }
 
 @Composable
-fun EpisodeListItem(
-    episode: Episode,
-    podcast: Podcast,
+fun ContentListItem(
+    content: Content,
+    asset: List<Asset>,
     onClick: (String) -> Unit,
     infoOnClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -169,7 +179,7 @@ fun EpisodeListItem(
     var popupExpanded by remember { mutableStateOf(false) }
     val onPopupDismiss = { value: Boolean -> popupExpanded = value }
 
-    ConstraintLayout(modifier = modifier.clickable { onClick(episode.uri) }) {
+    ConstraintLayout(modifier = modifier.clickable { onClick(content.title) }) {
         val (
             divider, episodeTitle, podcastTitle, image, playIcon,
             date, addPlaylist, overflow, dropdown
@@ -178,7 +188,7 @@ fun EpisodeListItem(
         // If we have an image Url, we can show it using Coil
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(podcast.imageUrl)
+                .data(content.bannerUrl)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
@@ -215,7 +225,7 @@ fun EpisodeListItem(
         )
 
         Text(
-            text = episode.title,
+            text = content.title,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.subtitle2,
@@ -230,22 +240,7 @@ fun EpisodeListItem(
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                text = podcast.author + "MB",
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.constrainAs(podcastTitle) {
-                    start.linkTo(date.end, 8.dp)
-                    top.linkTo(date.top)
-                    height = preferredWrapContent
-                    width = preferredWrapContent
-                }
-            )
-        }
-
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = "00: 41: 22",
+                text = runningTimeConverter(content.runningTime),
 //                when {
 //                    episode.duration != null -> {
 //                        // If we have the duration, we combine the date/duration via a
@@ -266,6 +261,21 @@ fun EpisodeListItem(
                     centerVerticallyTo(image)
                     start.linkTo(episodeTitle.start)
                     top.linkTo(episodeTitle.bottom)
+                    width = preferredWrapContent
+                }
+            )
+        }
+
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Text(
+                text = fileSizeConverter(content.runningTime), //TODO change this asset.size
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.constrainAs(podcastTitle) {
+                    start.linkTo(date.end, 8.dp)
+                    top.linkTo(date.top)
+                    height = preferredWrapContent
                     width = preferredWrapContent
                 }
             )
@@ -390,9 +400,9 @@ private val MediumDateFormatter by lazy {
 @Composable
 fun PreviewEpisodeListItem() {
     AppTheme {
-        EpisodeListItem(
-            episode = PreviewEpisodes[0],
-            podcast = PreviewPodcasts[0],
+        ContentListItem(
+            content = PreviewContent[0],
+            asset  = listOf(),
             onClick = { },
             infoOnClick = { },
             modifier = Modifier.fillMaxWidth()

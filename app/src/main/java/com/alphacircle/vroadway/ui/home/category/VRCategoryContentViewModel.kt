@@ -16,6 +16,7 @@
 
 package com.alphacircle.vroadway.ui.home.category
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.Graph
@@ -23,13 +24,16 @@ import com.alphacircle.vroadway.data.CategoryStore
 import com.alphacircle.vroadway.data.EpisodeToPodcast
 import com.alphacircle.vroadway.data.PodcastStore
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
+import com.alphacircle.vroadway.data.category.Content
+import com.alphacircle.vroadway.data.category.LowLevelCategory
+import com.alphacircle.vroadway.util.NetworkModule
+import com.alphacircle.vroadway.util.VroadwayAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class PodcastCategoryViewModel(
+class VRCategoryContentViewModel(
     private val categoryId: Long,
     private val categoryStore: CategoryStore = Graph.categoryStore,
     private val podcastStore: PodcastStore = Graph.podcastStore
@@ -41,6 +45,13 @@ class PodcastCategoryViewModel(
 
     init {
         viewModelScope.launch {
+            NetworkModule.getContents(categoryId,
+                onSuccess = {
+                    Log.println(Log.DEBUG, "VRCategory", it.toString())
+                    if(it.isNotEmpty()) state.value.contents = it
+            })
+
+
             val recentPodcastsFlow = categoryStore.podcastsInCategorySortedByPodcastCount(
                 categoryId,
                 limit = 10
@@ -54,7 +65,7 @@ class PodcastCategoryViewModel(
             // Combine our flows and collect them into the view state StateFlow
             combine(recentPodcastsFlow, episodesFlow) { topPodcasts, episodes ->
                 PodcastCategoryViewState(
-                    topPodcasts = topPodcasts,
+                    podCasts = topPodcasts,
                     episodes = episodes
                 )
             }.collect { _state.value = it }
@@ -69,6 +80,8 @@ class PodcastCategoryViewModel(
 }
 
 data class PodcastCategoryViewState(
-    val topPodcasts: List<PodcastWithExtraInfo> = emptyList(),
-    val episodes: List<EpisodeToPodcast> = emptyList()
+    val podCasts: List<PodcastWithExtraInfo> = emptyList(),
+    val episodes: List<EpisodeToPodcast> = emptyList(),
+    val categories: List<LowLevelCategory> = emptyList(),
+    var contents: List<Content> = emptyList()
 )

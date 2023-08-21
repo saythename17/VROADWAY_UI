@@ -18,7 +18,6 @@ package com.alphacircle.vroadway.ui.home.discover
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,9 +40,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alphacircle.vroadway.data.Category
 import com.alphacircle.vroadway.data.category.HighLevelCategory
-import com.alphacircle.vroadway.ui.home.category.PodcastCategory
+import com.alphacircle.vroadway.ui.home.category.VRCategory
 import com.alphacircle.vroadway.ui.theme.Keyline1
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -81,8 +79,9 @@ fun Discover(
                 /**
                  * TODO, need to think about how this will scroll within the outer VerticalScroller
                  */
-                PodcastCategory(
-                    categoryId = category.id,
+                VRCategory(
+                    lowLevelCategoryList = category.lowLevelCategoryList,
+                    categoryId = selectedCategory.lowLevelCategoryList[0].id.toLong(),
                     navigateToPlayer = navigateToPlayer,
                     navigateToInfo = navigateToInfo,
                     modifier = Modifier.fillMaxSize()

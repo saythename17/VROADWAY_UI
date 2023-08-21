@@ -18,7 +18,6 @@ package com.alphacircle.vroadway
 
 import android.content.Context
 import androidx.room.Room
-import com.alphacircle.vroadway.BuildConfig
 import com.alphacircle.vroadway.data.CategoryStore
 import com.alphacircle.vroadway.data.EpisodeStore
 import com.alphacircle.vroadway.data.PodcastStore
@@ -48,7 +47,7 @@ object Graph {
     private val transactionRunner: TransactionRunner
         get() = database.transactionRunnerDao()
 
-    private val syndFeedInput by lazy { SyndFeedInput() }
+    private val syncFeedInput by lazy { SyndFeedInput() }
 
     val podcastRepository by lazy {
         PodcastsRepository(
@@ -64,7 +63,7 @@ object Graph {
     private val podcastFetcher by lazy {
         PodcastsFetcher(
             okHttpClient = okHttpClient,
-            syndFeedInput = syndFeedInput,
+            syndFeedInput = syncFeedInput,
             ioDispatcher = ioDispatcher
         )
     }

@@ -1,6 +1,6 @@
 package com.alphacircle.vroadway.util
 
-import ContentResponse
+import com.alphacircle.vroadway.data.category.ContentResponse
 import com.alphacircle.vroadway.data.BoardResponse
 import com.alphacircle.vroadway.data.RegistryResponse
 import com.alphacircle.vroadway.data.User
@@ -44,9 +44,20 @@ interface VroadwayAPI {
     /**
      * Content : 특정 카테고리에 대한 모든 컨텐츠 목록 조회
      **/
-    @GET("/api/contents/categories/id={id}")
-    fun getContent(
-        @Path("id") id: Int
+    @GET("/api/contents/categories/{categoryId}")
+    fun getContents(
+        @Path("categoryId") categoryId: Int
+    ): Call<ContentResponse>
+
+    /**
+     * Asset : 컨텐츠별 에셋 조회(유료 컨텐츠일 경우 accessToken 필요)
+     **/
+    @GET("/api/assets/contents/id={id}")
+    fun getAsset(
+        @Path("id") id: Int,
+        @Query("platform") platform: String = "android",
+        @Query("resolution") resolution: String = "L",
+        @Query("ModelNumber") modelNumber: String = "SM-A31"
     ): Call<ContentResponse>
 
     /**

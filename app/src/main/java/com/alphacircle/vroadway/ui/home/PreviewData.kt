@@ -19,7 +19,7 @@ package com.alphacircle.vroadway.ui.home
 import com.alphacircle.vroadway.data.Category
 import com.alphacircle.vroadway.data.Episode
 import com.alphacircle.vroadway.data.Podcast
-import com.alphacircle.vroadway.data.PodcastWithExtraInfo
+import com.alphacircle.vroadway.data.category.Content
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
@@ -42,13 +42,13 @@ val PreviewPodcasts = listOf(
     )
 )
 
-val PreviewPodcastsWithExtraInfo = PreviewPodcasts.mapIndexed { index, podcast ->
-    PodcastWithExtraInfo().apply {
-        this.podcast = podcast
-        this.lastEpisodeDate = OffsetDateTime.now()
-        this.isFollowed = index % 2 == 0
-    }
-}
+//val PreviewPodcastsWithExtraInfo = PreviewPodcasts.mapIndexed { index, podcast ->
+//    CategoryRowInfo().apply {
+//        this.lowLevelCategory = podcast
+//        this.lastEpisodeDate = OffsetDateTime.now()
+//        this.isFollowed = index % 2 == 0
+//    }
+//}
 
 val PreviewEpisodes = listOf(
     Episode(
@@ -56,10 +56,24 @@ val PreviewEpisodes = listOf(
         podcastUri = PreviewPodcasts[0].uri,
         title = "Episode 140: Bubbles!",
         summary = "In this episode, Romain, Chet and Tor talked with Mady Melor and Artur " +
-            "Tsurkan from the System UI team about... Bubbles!",
+                "Tsurkan from the System UI team about... Bubbles!",
         published = OffsetDateTime.of(
             2020, 6, 2, 9,
             27, 0, 0, ZoneOffset.of("-0800")
         )
+    )
+)
+
+val PreviewContent = listOf(
+     Content(
+         id = 1,
+         title = "Episode 140: Bubbles!",
+         description = "In this episode, Romain, Chet and Tor talked with Mady Melor and Artur " +
+                 "Tsurkan from the System UI team about... Bubbles!",
+         sorting = 1,
+         runningTime = 234234,
+         accessControl = false,
+         categoryId = 2,
+         bannerUrl = "",
     )
 )
