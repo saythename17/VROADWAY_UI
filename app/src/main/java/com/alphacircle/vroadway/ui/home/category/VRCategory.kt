@@ -2,6 +2,7 @@ package com.alphacircle.vroadway.ui.home.category
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -58,9 +60,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.alphacircle.vroadway.R
-import com.alphacircle.vroadway.data.Episode
-import com.alphacircle.vroadway.data.EpisodeToPodcast
-import com.alphacircle.vroadway.data.Podcast
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.data.category.Asset
 import com.alphacircle.vroadway.data.category.Content
@@ -69,10 +68,11 @@ import com.alphacircle.vroadway.ui.components.ContentPopupMenu
 import com.alphacircle.vroadway.ui.components.TicketGuide
 import com.alphacircle.vroadway.ui.components.TicketGuideSlidePages
 import com.alphacircle.vroadway.ui.home.PreviewContent
-import com.alphacircle.vroadway.ui.home.PreviewEpisodes
-import com.alphacircle.vroadway.ui.home.PreviewPodcasts
 import com.alphacircle.vroadway.ui.theme.AppTheme
+import com.alphacircle.vroadway.ui.theme.EnglishTypography
 import com.alphacircle.vroadway.ui.theme.Keyline1
+import com.alphacircle.vroadway.ui.theme.KoreanTypography
+import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.util.LockCategoryIconButton
 import com.alphacircle.vroadway.util.fileSizeConverter
 import com.alphacircle.vroadway.util.runningTimeConverter
@@ -106,8 +106,12 @@ fun VRCategory(
      */
     Log.println(Log.DEBUG, "VRCategory", "viewState.contents: ${viewState.contents.size}")
     Column(modifier = modifier) {
-        CategoryPodcasts(lowLevelCategoryList, viewState.podCasts,  viewModel)
-        EpisodeList(contents = viewState.contents, navigateToPlayer = navigateToPlayer, navigateToInfo = navigateToInfo)
+        CategoryPodcasts(lowLevelCategoryList, viewState.podCasts, viewModel)
+        EpisodeList(
+            contents = viewState.contents,
+            navigateToPlayer = navigateToPlayer,
+            navigateToInfo = navigateToInfo
+        )
     }
 }
 
@@ -136,10 +140,13 @@ private fun CategoryPodcasts(
 
     CategoryPodcastRow(
         podcasts = topPodcasts,
+        lowLevelCategories = lowLevelCategories,
         showBottomSheetDialog = {
             lockCategoryGuideShow = true
-        },//viewModel::onTogglePodcastFollowed,
-        modifier = Modifier.fillMaxWidth()
+        },
+        //viewModel::onTogglePodcastFollowed,
+        modifier = Modifier.fillMaxWidth(),
+        onCategorySelected = viewModel::onCategorySelected
     )
 }
 
@@ -148,7 +155,7 @@ fun EpisodeList(
     contents: List<Content>,
     asset: List<Asset> = listOf(),
     navigateToPlayer: (String) -> Unit,
-    navigateToInfo: () -> Unit
+    navigateToInfo: () -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(0.dp),
@@ -179,7 +186,7 @@ fun ContentListItem(
     var popupExpanded by remember { mutableStateOf(false) }
     val onPopupDismiss = { value: Boolean -> popupExpanded = value }
 
-    ConstraintLayout(modifier = modifier.clickable { onClick(content.title) }) {
+    ConstraintLayout(/*modifier = modifier.clickable { onClick(content.title) }*/) {
         val (
             divider, episodeTitle, podcastTitle, image, playIcon,
             date, addPlaylist, overflow, dropdown
@@ -195,9 +202,9 @@ fun ContentListItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(104.dp, 64.dp)
-                .clip(MaterialTheme.shapes.medium)
+                .clip(MaterialTheme.shapes.large)
                 .constrainAs(image) {
-                    start.linkTo(parent.start, 16.dp)
+                    start.linkTo(parent.start, 24.dp)
                     top.linkTo(parent.top, 16.dp)
                 },
         )
@@ -228,11 +235,11 @@ fun ContentListItem(
             text = content.title,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.subtitle2,
+            style = KoreanTypography.subtitle2,
             modifier = Modifier
                 .constrainAs(episodeTitle) {
                     start.linkTo(image.end, 16.dp)
-                    top.linkTo(parent.top, 16.dp)
+                    top.linkTo(parent.top, 24.dp)
                     height = preferredWrapContent
                 }
                 .width(180.dp)
@@ -256,7 +263,7 @@ fun ContentListItem(
 //                },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.caption,
+                style = EnglishTypography.caption,
                 modifier = Modifier.constrainAs(date) {
                     centerVerticallyTo(image)
                     start.linkTo(episodeTitle.start)
@@ -271,7 +278,7 @@ fun ContentListItem(
                 text = fileSizeConverter(content.runningTime), //TODO change this asset.size
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.caption,
+                style = EnglishTypography.caption,
                 modifier = Modifier.constrainAs(podcastTitle) {
                     start.linkTo(date.end, 8.dp)
                     top.linkTo(date.top)
@@ -280,8 +287,6 @@ fun ContentListItem(
                 }
             )
         }
-
-
 
         IconButton(
             onClick = { onPopupDismiss(true) },
@@ -319,21 +324,32 @@ fun ContentListItem(
 @Composable
 private fun CategoryPodcastRow(
     podcasts: List<PodcastWithExtraInfo>,
+    lowLevelCategories: List<LowLevelCategory>,
     showBottomSheetDialog: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCategorySelected: (Long) -> Unit,
 ) {
-    val lastIndex = podcasts.size - 1
+    val lastIndex = lowLevelCategories.size - 1
+    var selectedIndex by remember { mutableStateOf(0) }
+    val onSelectedIndexChange = { index: Int ->
+        selectedIndex = index
+        onCategorySelected(lowLevelCategories[index].id.toLong())
+    }
     LazyRow(
         modifier = modifier,
         contentPadding = PaddingValues(start = Keyline1, top = 8.dp, end = Keyline1, bottom = 24.dp)
     ) {
-        itemsIndexed(items = podcasts) { index: Int,
-                                         (podcast, _, isFollowed): PodcastWithExtraInfo ->
-            TopPodcastRowItem(
-                podcastTitle = podcast.title,
-                podcastImageUrl = podcast.imageUrl,
-                isFollowed = isFollowed,
-                showBottomSheetDialog = { showBottomSheetDialog(podcast.uri) },
+        itemsIndexed(items = lowLevelCategories) { index: Int,
+                                                   (_, _, name, accessType, _, _, imageUrl): LowLevelCategory ->
+
+            TopCategoryRowItem(
+                podcastTitle = name,
+                podcastImageUrl = imageUrl,
+                index = index,
+                selectedIndex = selectedIndex,
+                onSelectedIndexChange = onSelectedIndexChange,
+                isFollowed = accessType.toBoolean(),
+                showBottomSheetDialog = { showBottomSheetDialog(imageUrl) },
                 modifier = Modifier.width(128.dp)
             )
 
@@ -343,8 +359,11 @@ private fun CategoryPodcastRow(
 }
 
 @Composable
-private fun TopPodcastRowItem(
+private fun TopCategoryRowItem(
     podcastTitle: String,
+    index: Int,
+    selectedIndex: Int,
+    onSelectedIndexChange: (Int) -> Unit,
     isFollowed: Boolean,
     modifier: Modifier = Modifier,
     showBottomSheetDialog: () -> Unit,
@@ -355,6 +374,7 @@ private fun TopPodcastRowItem(
     ) {
         Box(
             Modifier
+                .clickable { onSelectedIndexChange(index) }
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .align(Alignment.CenterHorizontally)
@@ -369,19 +389,25 @@ private fun TopPodcastRowItem(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
+                        .border(
+                            4.dp,
+                            if (index == selectedIndex) VroadwayColors.primary else Color.Transparent,
+                            MaterialTheme.shapes.medium
+                        )
                         .clip(MaterialTheme.shapes.medium),
                 )
             }
 
             LockCategoryIconButton(
                 onClick = showBottomSheetDialog,
-                isLock = isFollowed,
+                isLock = true, //isFollowed,
                 modifier = Modifier.align(Alignment.BottomEnd)
             )
         }
 
         Text(
             text = podcastTitle,
+            color = if (index == selectedIndex) VroadwayColors.primary else VroadwayColors.onSurface,
             style = MaterialTheme.typography.body2,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -402,7 +428,7 @@ fun PreviewEpisodeListItem() {
     AppTheme {
         ContentListItem(
             content = PreviewContent[0],
-            asset  = listOf(),
+            asset = listOf(),
             onClick = { },
             infoOnClick = { },
             modifier = Modifier.fillMaxWidth()

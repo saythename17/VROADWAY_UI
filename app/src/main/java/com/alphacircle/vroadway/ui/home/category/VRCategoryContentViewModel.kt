@@ -25,12 +25,15 @@ import com.alphacircle.vroadway.data.EpisodeToPodcast
 import com.alphacircle.vroadway.data.PodcastStore
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.data.category.Content
+import com.alphacircle.vroadway.data.category.HighLevelCategory
 import com.alphacircle.vroadway.data.category.LowLevelCategory
+import com.alphacircle.vroadway.ui.home.discover.HighLevelCategoryViewState
 import com.alphacircle.vroadway.util.NetworkModule
 import com.alphacircle.vroadway.util.VroadwayAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class VRCategoryContentViewModel(
@@ -48,8 +51,8 @@ class VRCategoryContentViewModel(
             NetworkModule.getContents(categoryId,
                 onSuccess = {
                     Log.println(Log.DEBUG, "VRCategory", it.toString())
-                    if(it.isNotEmpty()) state.value.contents = it
-            })
+                    if (it.isNotEmpty()) state.value.contents = it
+                })
 
 
             val recentPodcastsFlow = categoryStore.podcastsInCategorySortedByPodcastCount(
@@ -70,6 +73,18 @@ class VRCategoryContentViewModel(
                 )
             }.collect { _state.value = it }
         }
+    }
+
+    fun onCategorySelected(categoryId: Long) {
+        NetworkModule.getContents(categoryId, onSuccess = { it ->
+            Log.println(Log.DEBUG, "VRCategory", it.toString())
+            val contents = it
+            if (it.isNotEmpty()) _state.update{ PodcastCategoryViewState(
+                podCasts = it.podCasts,
+                episodes = it.episodes,
+                contents = contents
+            ) }
+        })
     }
 
     fun onTogglePodcastFollowed(podcastUri: String) {

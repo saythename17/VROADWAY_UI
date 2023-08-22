@@ -40,7 +40,9 @@ import androidx.navigation.compose.rememberNavController
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
     object Home : Screen("home")
-    object Info : Screen("info")
+    object Info : Screen("info/{categoryId}") {
+        fun createRoute(categoryId: Int) = "info/$categoryId"
+    }
     object Account : Screen("account")
     object PurchasedHistory : Screen("purchased")
     object Settings : Screen("settings")
@@ -88,7 +90,6 @@ class VroadwayAppState(
     }
 
     fun navigateToPurchasedHistory() {
-        Log.println(Log.DEBUG, "----------", "⬇️")
         navController.navigate(Screen.PurchasedHistory.route)
     }
 
