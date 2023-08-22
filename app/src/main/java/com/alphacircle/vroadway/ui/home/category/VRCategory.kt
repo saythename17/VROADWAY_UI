@@ -107,7 +107,7 @@ fun VRCategory(
     Log.println(Log.DEBUG, "VRCategory", "viewState.contents: ${viewState.contents.size}")
     Column(modifier = modifier) {
         CategoryPodcasts(lowLevelCategoryList, viewState.podCasts, viewModel)
-        EpisodeList(
+        ContentList(
             contents = viewState.contents,
             navigateToPlayer = navigateToPlayer,
             navigateToInfo = navigateToInfo
@@ -151,7 +151,7 @@ private fun CategoryPodcasts(
 }
 
 @Composable
-fun EpisodeList(
+fun ContentList(
     contents: List<Content>,
     asset: List<Asset> = listOf(),
     navigateToPlayer: (String) -> Unit,

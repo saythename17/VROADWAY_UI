@@ -51,7 +51,7 @@ class VRCategoryContentViewModel(
             NetworkModule.getContents(categoryId,
                 onSuccess = {
                     Log.println(Log.DEBUG, "VRCategory", it.toString())
-                    if (it.isNotEmpty()) state.value.contents = it
+                    if (it.isNotEmpty()) _state.value.contents = it
                 })
 
 
@@ -69,7 +69,8 @@ class VRCategoryContentViewModel(
             combine(recentPodcastsFlow, episodesFlow) { topPodcasts, episodes ->
                 PodcastCategoryViewState(
                     podCasts = topPodcasts,
-                    episodes = episodes
+                    episodes = episodes,
+                    contents = _state.value.contents
                 )
             }.collect { _state.value = it }
         }
