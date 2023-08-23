@@ -74,6 +74,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
+import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.ui.home.discover.Discover
 import com.alphacircle.vroadway.ui.home.my.My
 import com.alphacircle.vroadway.ui.theme.AppTheme
@@ -91,7 +92,7 @@ import kotlinx.collections.immutable.PersistentList
 @Composable
 fun Home(
     navigateToPlayer: (String) -> Unit,
-    navigateToInfo: () -> Unit,
+    navigateToInfo: (Long, Int) -> Unit,
     navigateToAccount: () -> Unit,
     navigateToSettings: () -> Unit,
     viewModel: HomeViewModel = viewModel()
@@ -125,7 +126,7 @@ fun HomeContent(
     onPodcastUnfollowed: (String) -> Unit,
     onCategorySelected: (HomeCategory) -> Unit,
     navigateToPlayer: (String) -> Unit,
-    navigateToInfo: () -> Unit,
+    navigateToInfo: (Long, Int) -> Unit,
     navigateToAccount: () -> Unit,
     navigateToSettings: () -> Unit
 ) {

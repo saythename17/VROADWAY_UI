@@ -21,7 +21,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +39,8 @@ import androidx.navigation.compose.rememberNavController
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
     object Home : Screen("home")
-    object Info : Screen("info/{categoryId}") {
-        fun createRoute(categoryId: Int) = "info/$categoryId"
+    object Info : Screen("info/{categoryId}/{index}") {
+        fun createRoute(categoryId: Long, index: Int) = "info/$categoryId/$index"
     }
     object Account : Screen("account")
     object PurchasedHistory : Screen("purchased")
@@ -109,8 +108,8 @@ class VroadwayAppState(
         navController.navigate(Screen.License.route)
     }
 
-    fun navigateToInfo() {
-        navController.navigate(Screen.Info.route)
+    fun navigateToInfo(categoryId: Long, index: Int) {
+        navController.navigate(Screen.Info.createRoute(categoryId, index))
     }
 
     fun navigateBack() {

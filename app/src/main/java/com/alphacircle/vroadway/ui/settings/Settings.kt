@@ -78,7 +78,7 @@ fun SettingItemList(
     )
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.DocumentScanner),
-        name = R.string.setting_item_licenses,
+        name = R.string.setting_item_policy,
         onClick = navigateToLicense
     )
 }

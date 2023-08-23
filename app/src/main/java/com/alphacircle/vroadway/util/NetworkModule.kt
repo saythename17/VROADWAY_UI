@@ -1,6 +1,8 @@
 package com.alphacircle.vroadway.util
 
 import android.util.Log
+import com.alphacircle.vroadway.data.Board
+import com.alphacircle.vroadway.data.BoardResponse
 import com.alphacircle.vroadway.data.category.CategoryResponse
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.ContentResponse
@@ -157,6 +159,45 @@ object NetworkModule {
             }
 
             override fun onFailure(call: Call<ContentResponse>, t: Throwable) {
+                Log.println(Log.DEBUG, "NetworkModule", t.message.toString())
+            }
+        })
+    }
+
+    fun getBoards(boardType: String,onSuccess: (List<Board>) -> Unit) {
+        val call: Call<BoardResponse> = createAPI().getBoards(boardType = boardType)
+
+        call.enqueue(object : Callback<BoardResponse> {
+            override fun onResponse(
+                call: Call<BoardResponse>,
+                 response: Response<BoardResponse>
+            ) {
+                if (response.isSuccessful) { // <--> response.code == 200
+                    Log.println(Log.DEBUG, "NetworkModule", "isSuccessful: " + response.body().toString())
+
+                    if (response.body()?.boardList == null) {
+                        throw Throwable("get All categories provides null")
+                        Log.println(Log.DEBUG, "NetworkModule", "categories provides null")
+                        return
+                    }
+                    // 성공 처리
+                    var responseList: BoardResponse = response.body()!!
+
+                    val newContents = responseList.boardList.map { i ->
+                        Board(
+                            title = i.title,
+                            description = i.description,
+                            sorting = i.sorting,
+                        )
+                    }
+                    onSuccess(newContents)
+                } else { // code == 400
+                    // 실패 처리
+                    Log.println(Log.DEBUG, "NetworkModule", "${response.message()}: "+ response.body().toString())
+                }
+            }
+
+            override fun onFailure(call: Call<BoardResponse>, t: Throwable) {
                 Log.println(Log.DEBUG, "NetworkModule", t.message.toString())
             }
         })

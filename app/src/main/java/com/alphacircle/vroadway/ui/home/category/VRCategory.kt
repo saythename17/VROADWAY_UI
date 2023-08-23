@@ -86,7 +86,7 @@ fun VRCategory(
     lowLevelCategoryList: List<LowLevelCategory>,
     categoryId: Long,
     navigateToPlayer: (String) -> Unit,
-    navigateToInfo: () -> Unit,
+    navigateToInfo: (Long, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     /**
@@ -106,7 +106,7 @@ fun VRCategory(
      */
     Log.println(Log.DEBUG, "VRCategory", "viewState.contents: ${viewState.contents.size}")
     Column(modifier = modifier) {
-        CategoryPodcasts(lowLevelCategoryList, viewState.podCasts, viewModel)
+        CategoryPodcasts(lowLevelCategoryList, viewState.podCasts, viewModel, viewState.categoryIndex)
         ContentList(
             contents = viewState.contents,
             navigateToPlayer = navigateToPlayer,
@@ -119,7 +119,8 @@ fun VRCategory(
 private fun CategoryPodcasts(
     lowLevelCategories: List<LowLevelCategory>,
     topPodcasts: List<PodcastWithExtraInfo>,
-    viewModel: VRCategoryContentViewModel
+    viewModel: VRCategoryContentViewModel,
+    selectedIndex: Int
 ) {
     var lockCategoryGuideShow by remember { mutableStateOf(false) }
     var ticketGuideShow by remember { mutableStateOf(false) }
@@ -146,8 +147,107 @@ private fun CategoryPodcasts(
         },
         //viewModel::onTogglePodcastFollowed,
         modifier = Modifier.fillMaxWidth(),
-        onCategorySelected = viewModel::onCategorySelected
+        onCategorySelected = viewModel::onCategorySelected,
+        selectedIndex = selectedIndex
     )
+}
+
+@Composable
+private fun CategoryPodcastRow(
+    podcasts: List<PodcastWithExtraInfo>,
+    lowLevelCategories: List<LowLevelCategory>,
+    showBottomSheetDialog: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onCategorySelected: (Int, Int) -> Unit,
+    selectedIndex: Int,
+) {
+    val lastIndex = lowLevelCategories.size - 1
+//    var selectedIndex by remember { mutableStateOf(0) }
+    val onSelectedIndexChange = { index: Int ->
+//        selectedIndex = index
+        onCategorySelected(lowLevelCategories[index].id, index)
+    }
+    LazyRow(
+        modifier = modifier,
+        contentPadding = PaddingValues(start = Keyline1, top = 8.dp, end = Keyline1, bottom = 24.dp)
+    ) {
+        itemsIndexed(items = lowLevelCategories) { index: Int,
+                                                   (_, _, name, accessType, _, _, imageUrl): LowLevelCategory ->
+
+            TopCategoryRowItem(
+                podcastTitle = name,
+                podcastImageUrl = imageUrl,
+                index = index,
+                selectedIndex = selectedIndex,
+                onSelectedIndexChange = onSelectedIndexChange,
+                isFollowed = accessType.toBoolean(),
+                showBottomSheetDialog = { showBottomSheetDialog(imageUrl) },
+                modifier = Modifier.width(128.dp)
+            )
+
+            if (index < lastIndex) Spacer(Modifier.width(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun TopCategoryRowItem(
+    podcastTitle: String,
+    index: Int,
+    selectedIndex: Int,
+    onSelectedIndexChange: (Int) -> Unit,
+    isFollowed: Boolean,
+    modifier: Modifier = Modifier,
+    showBottomSheetDialog: () -> Unit,
+    podcastImageUrl: String? = null,
+) {
+    Column(
+        modifier.semantics(mergeDescendants = true) {}
+    ) {
+        Box(
+            Modifier
+                .clickable { onSelectedIndexChange(index) }
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            if (podcastImageUrl != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(podcastImageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(
+                            4.dp,
+                            if (index == selectedIndex) VroadwayColors.primary else Color.Transparent,
+                            MaterialTheme.shapes.medium
+                        )
+                        .clip(MaterialTheme.shapes.medium),
+                )
+            }
+
+            LockCategoryIconButton(
+                onClick = showBottomSheetDialog,
+                isLock = true, //isFollowed,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
+        }
+
+        Text(
+            text = podcastTitle,
+            color = if (index == selectedIndex) VroadwayColors.primary else VroadwayColors.onSurface,
+            style = MaterialTheme.typography.body2,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth()
+        )
+    }
 }
 
 @Composable
@@ -155,13 +255,12 @@ fun ContentList(
     contents: List<Content>,
     asset: List<Asset> = listOf(),
     navigateToPlayer: (String) -> Unit,
-    navigateToInfo: () -> Unit,
+    navigateToInfo: (Long, Int) -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(0.dp),
         verticalArrangement = Arrangement.Center
     ) {
-
         items(contents, key = { it.id }) { item ->
             ContentListItem(
                 content = item,
@@ -179,7 +278,7 @@ fun ContentListItem(
     content: Content,
     asset: List<Asset>,
     onClick: (String) -> Unit,
-    infoOnClick: () -> Unit,
+    infoOnClick: (Long, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -311,108 +410,11 @@ fun ContentListItem(
         ContentPopupMenu(
             expanded = popupExpanded,
             onPopupDismiss = onPopupDismiss,
-            infoOnClick = infoOnClick,
+            infoOnClick = { infoOnClick(content.categoryId.toLong(), content.sorting-1) },
             modifier = Modifier
                 .constrainAs(dropdown) {
                     end.linkTo(parent.end, 16.dp)
                 }
-                .fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun CategoryPodcastRow(
-    podcasts: List<PodcastWithExtraInfo>,
-    lowLevelCategories: List<LowLevelCategory>,
-    showBottomSheetDialog: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    onCategorySelected: (Long) -> Unit,
-) {
-    val lastIndex = lowLevelCategories.size - 1
-    var selectedIndex by remember { mutableStateOf(0) }
-    val onSelectedIndexChange = { index: Int ->
-        selectedIndex = index
-        onCategorySelected(lowLevelCategories[index].id.toLong())
-    }
-    LazyRow(
-        modifier = modifier,
-        contentPadding = PaddingValues(start = Keyline1, top = 8.dp, end = Keyline1, bottom = 24.dp)
-    ) {
-        itemsIndexed(items = lowLevelCategories) { index: Int,
-                                                   (_, _, name, accessType, _, _, imageUrl): LowLevelCategory ->
-
-            TopCategoryRowItem(
-                podcastTitle = name,
-                podcastImageUrl = imageUrl,
-                index = index,
-                selectedIndex = selectedIndex,
-                onSelectedIndexChange = onSelectedIndexChange,
-                isFollowed = accessType.toBoolean(),
-                showBottomSheetDialog = { showBottomSheetDialog(imageUrl) },
-                modifier = Modifier.width(128.dp)
-            )
-
-            if (index < lastIndex) Spacer(Modifier.width(24.dp))
-        }
-    }
-}
-
-@Composable
-private fun TopCategoryRowItem(
-    podcastTitle: String,
-    index: Int,
-    selectedIndex: Int,
-    onSelectedIndexChange: (Int) -> Unit,
-    isFollowed: Boolean,
-    modifier: Modifier = Modifier,
-    showBottomSheetDialog: () -> Unit,
-    podcastImageUrl: String? = null,
-) {
-    Column(
-        modifier.semantics(mergeDescendants = true) {}
-    ) {
-        Box(
-            Modifier
-                .clickable { onSelectedIndexChange(index) }
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            if (podcastImageUrl != null) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(podcastImageUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .border(
-                            4.dp,
-                            if (index == selectedIndex) VroadwayColors.primary else Color.Transparent,
-                            MaterialTheme.shapes.medium
-                        )
-                        .clip(MaterialTheme.shapes.medium),
-                )
-            }
-
-            LockCategoryIconButton(
-                onClick = showBottomSheetDialog,
-                isLock = true, //isFollowed,
-                modifier = Modifier.align(Alignment.BottomEnd)
-            )
-        }
-
-        Text(
-            text = podcastTitle,
-            color = if (index == selectedIndex) VroadwayColors.primary else VroadwayColors.onSurface,
-            style = MaterialTheme.typography.body2,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .padding(top = 8.dp)
                 .fillMaxWidth()
         )
     }
@@ -430,7 +432,7 @@ fun PreviewEpisodeListItem() {
             content = PreviewContent[0],
             asset = listOf(),
             onClick = { },
-            infoOnClick = { },
+            infoOnClick = { l: Long, i: Int -> },
             modifier = Modifier.fillMaxWidth()
         )
     }

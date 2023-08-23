@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.data.Category
+import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.HighLevelCategory
 import com.alphacircle.vroadway.ui.components.NoListView
 import com.alphacircle.vroadway.ui.home.discover.DiscoverViewModel
@@ -26,7 +27,7 @@ import com.alphacircle.vroadway.ui.home.discover.DiscoverViewModel
 @Composable
 fun My(
     navigateToPlayer: (String) -> Unit,
-    navigateToInfo: () -> Unit,
+    navigateToInfo: (Long, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -98,5 +99,5 @@ fun PreviewTitleBar() {
 @Preview
 @Composable
 fun PreviewMy() {
-    My(navigateToPlayer = {}, navigateToInfo = {}, Modifier)
+//    My(navigateToPlayer = {}, navigateToInfo = , Modifier)
 }

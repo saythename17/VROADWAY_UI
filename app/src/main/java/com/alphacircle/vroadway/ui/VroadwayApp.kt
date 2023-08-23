@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.window.layout.DisplayFeature
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.ui.account.Account
@@ -35,7 +36,7 @@ import com.alphacircle.vroadway.ui.info.Info
 import com.alphacircle.vroadway.ui.player.PlayerScreen
 import com.alphacircle.vroadway.ui.player.PlayerViewModel
 import com.alphacircle.vroadway.ui.settings.Guides
-import com.alphacircle.vroadway.ui.settings.Licenses
+import com.alphacircle.vroadway.ui.settings.Policy
 import com.alphacircle.vroadway.ui.settings.Notices
 import com.alphacircle.vroadway.ui.settings.Settings
 import com.alphacircle.vroadway.ui.splash.Splash
@@ -46,6 +47,8 @@ fun VroadwayApp(
     displayFeatures: List<DisplayFeature>,
     appState: VroadwayAppState = rememberVroadwayAppState()
 ) {
+    val infoArgCategoryId = "categoryId"
+    val infoArgContentIndex = "index"
     if (appState.isOnline) {
         NavHost(
             navController = appState.navController,
@@ -59,13 +62,22 @@ fun VroadwayApp(
                     navigateToPlayer = { episodeUri ->
                         appState.navigateToPlayer(episodeUri, backStackEntry)
                     },
-                    navigateToInfo = { appState.navigateToInfo() },
+                    navigateToInfo = { categoryId, index -> appState.navigateToInfo(categoryId, index) },
                     navigateToAccount = { appState.navigateToAccount() },
                     navigateToSettings = { appState.navigateToSettings() }
                 )
             }
-            composable(Screen.Info.route) { _ ->
-                Info(onBackPress = appState::navigateBack)
+            composable(
+                Screen.Info.route,
+                arguments = listOf(navArgument(infoArgCategoryId) { defaultValue = 6L },
+                    navArgument(infoArgContentIndex) { defaultValue = 0 }
+                )
+            ) { backStageEntry ->
+                Info(
+                    onBackPress = appState::navigateBack,
+                    backStageEntry.arguments!!.getLong(infoArgCategoryId),
+                    backStageEntry.arguments!!.getInt(infoArgContentIndex)
+                )
             }
             composable(Screen.Account.route) { _ ->
                 Account(
@@ -88,7 +100,7 @@ fun VroadwayApp(
                 Guides(onBackPress = appState::navigateBack)
             }
             composable(Screen.License.route) { _ ->
-                Licenses(onBackPress = appState::navigateBack)
+                Policy(onBackPress = appState::navigateBack)
             }
             composable(Screen.Notices.route) { _ ->
                 Notices(onBackPress = appState::navigateBack)

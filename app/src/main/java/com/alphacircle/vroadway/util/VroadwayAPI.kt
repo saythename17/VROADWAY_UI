@@ -17,20 +17,25 @@ interface VroadwayAPI {
     /**
      * Board : 특정 보드 타입에 대한 모든 보드 목록, 개인정보처리방침 조회
      **/
+    @GET("/api/boards/{boardType}")
+    fun getBoards(
+        @Path("boardType") boardType: String = "notice",
+        @Query("language") language: String = "ko-KR"
+    ): Call<BoardResponse>
     @GET("/api/boards/notice")
     fun getNotice(
         @Query("language") language: String = "ko-KR"
-    ): Call<List<BoardResponse>>
+    ): Call<BoardResponse>
 
     @GET("/api/boards/faq")
     fun getFAQ(
         @Query("language") language: String = "ko-KR"
-    ): Call<List<BoardResponse>>
+    ): Call<BoardResponse>
 
     @GET("/api/boards/policy")
     fun getPolicy(
         @Query("language") language: String = "ko-KR"
-    ): Call<List<BoardResponse>>
+    ): Call<BoardResponse>
 
     @GET("/api/boards/policies/privacy")
     fun getPrivacy(): Call<List<BoardResponse>>

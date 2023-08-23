@@ -8,22 +8,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Colors
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.CircleNotifications
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,33 +27,35 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Gray
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alphacircle.vroadway.data.AccordionModel
+import com.alphacircle.vroadway.data.Board
 import com.alphacircle.vroadway.ui.theme.KoreanTypography
 import com.alphacircle.vroadway.ui.theme.VroadwayColors
 
 @Composable
 fun Accordion(
     modifier: Modifier = Modifier,
-    model: AccordionModel
+    board: Board,
+    boardType: String,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        AccordionHeader(title = model.header, isExpanded = expanded) {
-            expanded = !expanded
-        }
+        AccordionHeader(
+            title = board.title,
+            isExpanded = expanded,
+            boardType = boardType,
+            onTapped = { expanded = !expanded })
         AnimatedVisibility(visible = expanded) {
             Surface(
                 border = BorderStroke(1.dp, Gray),
                 elevation = 1.dp,
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                AccordionContent(model.content)
+                AccordionContent(board.description)
             }
         }
     }
@@ -66,10 +63,11 @@ fun Accordion(
 
 @Composable
 private fun AccordionHeader(
-    title: String = "Header",
-    sub: String = "2023.07.07",
+    title: String = "",
+    sub: String = "",
     isExpanded: Boolean = false,
-    onTapped: () -> Unit = {}
+    onTapped: () -> Unit = {},
+    boardType: String = "notice"
 ) {
     val degrees = if (isExpanded) 180f else 0f
 
@@ -88,21 +86,24 @@ private fun AccordionHeader(
 //                color = VroadwayColors.primary,
 //                modifier = Modifier.padding(0.dp, 0.dp, 16.dp, 0.dp)
 //            ) {
+            if (boardType != "policy") {
                 Icon(
-                    Icons.Filled.Warning,
+                    if (boardType == "notice") Icons.Filled.Warning else Icons.Filled.CircleNotifications,
                     contentDescription = "arrow-down",
                     modifier = Modifier.padding(0.dp, 0.dp, 16.dp, 0.dp),
                     tint = VroadwayColors.primary
                 )
+            }
+
 //            }
 
             Column(Modifier.weight(1f)) {
-                Text(
-                    sub,
-                    style = KoreanTypography.caption,
-                    modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 4.dp)
-//                    color = VroadwayColors.onSurface.copy(alpha = 0.3f)
-                )
+//                Text(
+//                    sub,
+//                    style = KoreanTypography.caption,
+//                    modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 4.dp)
+////                    color = VroadwayColors.onSurface.copy(alpha = 0.3f)
+//                )
                 Text(
                     title,
                     style = KoreanTypography.subtitle2,
@@ -143,10 +144,10 @@ private fun AccordionContent(
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewAccordion() {
-    val model = AccordionModel(
-        header = "[필독] 사용 설명서 - I. 사전 체크사항",
-        subText = "2023.07.07",
-        content = "Checklist 1\n" +
+    val board = Board(
+        title = "[필독] 사용 설명서 - I. 사전 체크사항",
+        sorting = 0,
+        description = "Checklist 1\n" +
                 "VROADWAY는 network 미연결 시 동작하지 않습니다.\n" +
                 "VROADWAY를 실행했는데, 만일 콘텐츠가 전혀 보이지 않는다면 Network 연결 상태를 확인하세요.\n" +
                 "\n" +
@@ -163,7 +164,7 @@ fun PreviewAccordion() {
                 "자동 밝기를 on 하고 사용하는 경우, 휴대폰을 VR HMD 안에 삽입하면 주변 밝기가 어둡다고 인식하여 화면이 어두워 집니다.\n" +
                 "쾌적한 VR 관람을 위해서는 자동 밝기를 off하고 사용해 주시기 바랍니다."
     )
-    Accordion(model = model)
+    Accordion(board = board, boardType = "")
 }
 
 @Preview

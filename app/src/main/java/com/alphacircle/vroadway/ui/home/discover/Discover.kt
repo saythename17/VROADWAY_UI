@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.HighLevelCategory
 import com.alphacircle.vroadway.ui.home.category.VRCategory
 import com.alphacircle.vroadway.ui.theme.Keyline1
@@ -49,7 +50,7 @@ import com.alphacircle.vroadway.ui.theme.Keyline1
 @Composable
 fun Discover(
     navigateToPlayer: (String) -> Unit,
-    navigateToInfo: () -> Unit,
+    navigateToInfo: (Long, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val viewModel: DiscoverViewModel = viewModel()

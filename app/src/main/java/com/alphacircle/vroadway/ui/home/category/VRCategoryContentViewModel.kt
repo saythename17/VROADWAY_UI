@@ -50,8 +50,14 @@ class VRCategoryContentViewModel(
         viewModelScope.launch {
             NetworkModule.getContents(categoryId,
                 onSuccess = {
+                    state.value.contents = it
                     Log.println(Log.DEBUG, "VRCategory", it.toString())
-                    if (it.isNotEmpty()) _state.value.contents = it
+                    val contents = it
+                    if (it.isNotEmpty()) _state.update {
+                        PodcastCategoryViewState(
+                            contents = contents
+                        )
+                    }
                 })
 
 
@@ -70,21 +76,25 @@ class VRCategoryContentViewModel(
                 PodcastCategoryViewState(
                     podCasts = topPodcasts,
                     episodes = episodes,
-                    contents = _state.value.contents
                 )
             }.collect { _state.value = it }
         }
     }
 
-    fun onCategorySelected(categoryId: Long) {
-        NetworkModule.getContents(categoryId, onSuccess = { it ->
-            Log.println(Log.DEBUG, "VRCategory", it.toString())
+    fun onCategorySelected(categoryId: Int, index: Int) {
+        NetworkModule.getContents(categoryId.toLong(), onSuccess = { it ->
             val contents = it
-            if (it.isNotEmpty()) _state.update{ PodcastCategoryViewState(
-                podCasts = it.podCasts,
-                episodes = it.episodes,
-                contents = contents
-            ) }
+            if (it.isNotEmpty()) _state.update {
+                PodcastCategoryViewState(
+                    contents = contents,
+                    categoryIndex = index
+                )
+            }
+            Log.println(
+                Log.DEBUG,
+                "VRCategory",
+                "categoryID= $categoryId, categoryIndex= ${_state.value.categoryIndex}"
+            )
         })
     }
 
@@ -99,5 +109,6 @@ data class PodcastCategoryViewState(
     val podCasts: List<PodcastWithExtraInfo> = emptyList(),
     val episodes: List<EpisodeToPodcast> = emptyList(),
     val categories: List<LowLevelCategory> = emptyList(),
+    val categoryIndex: Int = 0,
     var contents: List<Content> = emptyList()
 )

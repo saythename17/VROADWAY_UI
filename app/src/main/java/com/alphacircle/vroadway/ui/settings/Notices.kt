@@ -13,6 +13,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.alphacircle.vroadway.R
@@ -32,7 +35,9 @@ import com.alphacircle.vroadway.data.AccordionListSample
 import com.alphacircle.vroadway.ui.components.AccordionList
 import com.alphacircle.vroadway.ui.components.NoListView
 import com.alphacircle.vroadway.ui.components.TopBar
+import com.alphacircle.vroadway.ui.info.ContentInfoViewModel
 import com.alphacircle.vroadway.ui.theme.EnglishTypography
+import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
 
 @Composable
 fun Notices(
@@ -41,7 +46,8 @@ fun Notices(
     val surfaceColor = MaterialTheme.colors.surface
     val appBarColor = surfaceColor.copy(alpha = 0.87f)
 
-    val purchasedList = listOf<String>("", "")
+    val viewModel: BoardViewModel = viewModel(factory = viewModelProviderFactoryOf { BoardViewModel("notice") })
+    val viewState by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -53,7 +59,7 @@ fun Notices(
                 .verticalScroll(rememberScrollState())
                 .padding(it)
         ) {
-            AccordionList(list = AccordionListSample)
+            AccordionList(list = viewState.boardList, boardType = "notice")
         }
     }
 }

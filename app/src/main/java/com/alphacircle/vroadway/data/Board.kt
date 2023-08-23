@@ -1,7 +1,9 @@
 package com.alphacircle.vroadway.data
 
+import com.google.gson.annotations.SerializedName
+
 data class BoardResponse(
-    val boardList: List<Board>
+    @SerializedName("items") val boardList: List<Board>
 )
 
 data class Board(
