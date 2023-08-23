@@ -16,6 +16,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.CircleNotifications
 import androidx.compose.material.icons.filled.Warning
@@ -88,7 +89,7 @@ private fun AccordionHeader(
 //            ) {
             if (boardType != "policy") {
                 Icon(
-                    if (boardType == "notice") Icons.Filled.Warning else Icons.Filled.CircleNotifications,
+                    if (boardType == "notice") Icons.Filled.CircleNotifications else Icons.Filled.CheckCircle,
                     contentDescription = "arrow-down",
                     modifier = Modifier.padding(0.dp, 0.dp, 16.dp, 0.dp),
                     tint = VroadwayColors.primary

@@ -38,8 +38,6 @@ import kotlinx.coroutines.launch
 
 class VRCategoryContentViewModel(
     private val categoryId: Long,
-    private val categoryStore: CategoryStore = Graph.categoryStore,
-    private val podcastStore: PodcastStore = Graph.podcastStore
 ) : ViewModel() {
     private val _state = MutableStateFlow(PodcastCategoryViewState())
 
@@ -50,7 +48,6 @@ class VRCategoryContentViewModel(
         viewModelScope.launch {
             NetworkModule.getContents(categoryId,
                 onSuccess = {
-                    state.value.contents = it
                     Log.println(Log.DEBUG, "VRCategory", it.toString())
                     val contents = it
                     if (it.isNotEmpty()) _state.update {
@@ -59,25 +56,6 @@ class VRCategoryContentViewModel(
                         )
                     }
                 })
-
-
-            val recentPodcastsFlow = categoryStore.podcastsInCategorySortedByPodcastCount(
-                categoryId,
-                limit = 10
-            )
-
-            val episodesFlow = categoryStore.episodesFromPodcastsInCategory(
-                categoryId,
-                limit = 20
-            )
-
-            // Combine our flows and collect them into the view state StateFlow
-            combine(recentPodcastsFlow, episodesFlow) { topPodcasts, episodes ->
-                PodcastCategoryViewState(
-                    podCasts = topPodcasts,
-                    episodes = episodes,
-                )
-            }.collect { _state.value = it }
         }
     }
 
@@ -97,18 +75,9 @@ class VRCategoryContentViewModel(
             )
         })
     }
-
-    fun onTogglePodcastFollowed(podcastUri: String) {
-        viewModelScope.launch {
-            podcastStore.togglePodcastFollowed(podcastUri)
-        }
-    }
 }
 
 data class PodcastCategoryViewState(
-    val podCasts: List<PodcastWithExtraInfo> = emptyList(),
-    val episodes: List<EpisodeToPodcast> = emptyList(),
-    val categories: List<LowLevelCategory> = emptyList(),
     val categoryIndex: Int = 0,
     var contents: List<Content> = emptyList()
 )

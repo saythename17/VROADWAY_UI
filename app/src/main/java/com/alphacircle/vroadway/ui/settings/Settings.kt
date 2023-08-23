@@ -7,10 +7,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Dock
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Dvr
+import androidx.compose.material.icons.filled.FilePresent
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Policy
 import androidx.compose.material.icons.filled.QrCode
+import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.filled.ViewList
+import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -67,7 +77,7 @@ fun SettingItemList(
         onClick = {}
     )
     MenuItem(
-        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Dvr),
+        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.MenuBook),
         name = R.string.setting_item_guide,
         onClick = navigateToGuides
     )
@@ -77,7 +87,7 @@ fun SettingItemList(
         onClick = navigateToNotices
     )
     MenuItem(
-        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.DocumentScanner),
+        menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Policy),
         name = R.string.setting_item_policy,
         onClick = navigateToLicense
     )

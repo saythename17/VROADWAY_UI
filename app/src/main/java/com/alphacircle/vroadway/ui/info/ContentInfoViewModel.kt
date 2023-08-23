@@ -31,7 +31,6 @@ class ContentInfoViewModel(
         viewModelScope.launch {
             NetworkModule.getContents(categoryId,
                 onSuccess = {
-                Log.println(Log.DEBUG, "VRCategory", it.toString())
                 if(it.isNotEmpty()) state.value.content = it[index]
             })
         }

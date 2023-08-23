@@ -89,8 +89,6 @@ object NetworkModule {
                         throw Throwable("get All categories provides null")
                         Log.println(Log.DEBUG, "NetworkModule", "categories provides null")
                     }
-                    // 성공 처리
-                    Log.println(Log.DEBUG, "NetworkModule", response.body().toString())
 
                     var responseList: CategoryResponse = response.body()!!
 
@@ -129,8 +127,6 @@ object NetworkModule {
                 response: Response<ContentResponse>
             ) {
                 if (response.isSuccessful) { // <--> response.code == 200
-                    Log.println(Log.DEBUG, "NetworkModule", "isSuccessful: " + response.body().toString())
-
                     if (response.body()?.contentList == null) {
                         throw Throwable("get All categories provides null")
                         Log.println(Log.DEBUG, "NetworkModule", "categories provides null")

@@ -60,7 +60,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.alphacircle.vroadway.R
-import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.data.category.Asset
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.LowLevelCategory
@@ -106,7 +105,7 @@ fun VRCategory(
      */
     Log.println(Log.DEBUG, "VRCategory", "viewState.contents: ${viewState.contents.size}")
     Column(modifier = modifier) {
-        CategoryPodcasts(lowLevelCategoryList, viewState.podCasts, viewModel, viewState.categoryIndex)
+        CategoryPodcasts(lowLevelCategoryList, viewModel, viewState.categoryIndex)
         ContentList(
             contents = viewState.contents,
             navigateToPlayer = navigateToPlayer,
@@ -118,7 +117,6 @@ fun VRCategory(
 @Composable
 private fun CategoryPodcasts(
     lowLevelCategories: List<LowLevelCategory>,
-    topPodcasts: List<PodcastWithExtraInfo>,
     viewModel: VRCategoryContentViewModel,
     selectedIndex: Int
 ) {
@@ -140,7 +138,6 @@ private fun CategoryPodcasts(
     }
 
     CategoryPodcastRow(
-        podcasts = topPodcasts,
         lowLevelCategories = lowLevelCategories,
         showBottomSheetDialog = {
             lockCategoryGuideShow = true
@@ -154,7 +151,6 @@ private fun CategoryPodcasts(
 
 @Composable
 private fun CategoryPodcastRow(
-    podcasts: List<PodcastWithExtraInfo>,
     lowLevelCategories: List<LowLevelCategory>,
     showBottomSheetDialog: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -283,9 +279,9 @@ fun ContentListItem(
 ) {
 
     var popupExpanded by remember { mutableStateOf(false) }
-    val onPopupDismiss = { value: Boolean -> popupExpanded = value }
+    val onPopupExpand = { value: Boolean -> popupExpanded = value }
 
-    ConstraintLayout(/*modifier = modifier.clickable { onClick(content.title) }*/) {
+    ConstraintLayout(modifier = modifier.clickable { /*onClick(content.title)*/ onPopupExpand(false) }) {
         val (
             divider, episodeTitle, podcastTitle, image, playIcon,
             date, addPlaylist, overflow, dropdown
@@ -388,7 +384,7 @@ fun ContentListItem(
         }
 
         IconButton(
-            onClick = { onPopupDismiss(true) },
+            onClick = { onPopupExpand(true) },
             modifier = Modifier.constrainAs(overflow) {
                 end.linkTo(parent.end, 8.dp)
             }
@@ -409,7 +405,7 @@ fun ContentListItem(
 
         ContentPopupMenu(
             expanded = popupExpanded,
-            onPopupDismiss = onPopupDismiss,
+            onPopupDismiss = onPopupExpand,
             infoOnClick = { infoOnClick(content.categoryId.toLong(), content.sorting-1) },
             modifier = Modifier
                 .constrainAs(dropdown) {

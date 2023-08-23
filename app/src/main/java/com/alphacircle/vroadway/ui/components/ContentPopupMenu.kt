@@ -132,7 +132,7 @@ fun ContentPopupMenu(
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview()
 @Composable
 fun PreviewContentPopupMenu() {
     ConstraintLayout {
