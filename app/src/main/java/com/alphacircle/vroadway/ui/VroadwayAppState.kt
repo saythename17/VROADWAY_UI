@@ -73,7 +73,9 @@ class VroadwayAppState(
     }
 
     fun navigateToHome() {
-        navController.navigate(Screen.Home.route)
+        navController.navigate(Screen.Home.route) {
+            popUpTo(0) // NOTE: Delete previous Splash Screen from navigation Stack
+        }
     }
 
     fun navigateToPlayer(episodeUri: String, from: NavBackStackEntry) {

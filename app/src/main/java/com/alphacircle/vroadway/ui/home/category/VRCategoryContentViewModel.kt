@@ -16,25 +16,20 @@
 
 package com.alphacircle.vroadway.ui.home.category
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alphacircle.vroadway.Graph
-import com.alphacircle.vroadway.data.CategoryStore
-import com.alphacircle.vroadway.data.EpisodeToPodcast
-import com.alphacircle.vroadway.data.PodcastStore
-import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.data.category.Content
-import com.alphacircle.vroadway.data.category.HighLevelCategory
 import com.alphacircle.vroadway.data.category.LowLevelCategory
-import com.alphacircle.vroadway.ui.home.discover.HighLevelCategoryViewState
 import com.alphacircle.vroadway.util.NetworkModule
-import com.alphacircle.vroadway.util.VroadwayAPI
+import com.alphacircle.vroadway.util.VideoDownloader
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class VRCategoryContentViewModel(
     private val categoryId: Long,
@@ -75,9 +70,34 @@ class VRCategoryContentViewModel(
             )
         })
     }
+
+    fun onClickDownload(
+        contentId: Int,
+        context: Context,
+        setIsDownloading: (Boolean) -> Unit,
+        setDownloadProgress: (Float) -> Unit,
+        setIsDownloadFinished: (Boolean) -> Unit
+    ) {
+        setIsDownloading(true)
+        NetworkModule.getAssets(contentId, onSuccess = { it ->
+            it.map {
+                runBlocking {
+                    VideoDownloader(context).startDownload(
+                        it.location,
+                        contentId,
+                        it.name,
+                        setIsDownloading,
+                        setDownloadProgress,
+                        setIsDownloadFinished
+                    )
+                }
+            }
+        })
+    }
 }
 
 data class PodcastCategoryViewState(
+    var selectedCategory: LowLevelCategory? = null,
     val categoryIndex: Int = 0,
-    var contents: List<Content> = emptyList()
+    var contents: List<Content> = emptyList(),
 )

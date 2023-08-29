@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.ui.theme.EnglishTypography
+import com.alphacircle.vroadway.ui.theme.VroadwayColors
 
 sealed class MenuIcon {
     data class DrawableResIcon(@DrawableRes val iconId: Int) : MenuIcon()
@@ -39,7 +41,8 @@ fun MenuItem(
     menuIcon: MenuIcon,
 //    @StringRes iconDesc: Int?,
     @StringRes name: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    color: Color = MaterialTheme.colors.onSurface
 ) {
     Column(
         modifier = Modifier.clickable { onClick() }
@@ -58,7 +61,8 @@ fun MenuItem(
                             painterResource(id = icon.iconId),
 //                                contentDescription = stringResource(id = iconDesc),
                             null,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp),
+                            tint = color
                         )
                     }
 
@@ -67,7 +71,8 @@ fun MenuItem(
                             imageVector = icon.imageVector,
 //                                contentDescription = stringResource(id = iconDesc),
                             null,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp),
+                            tint = color
                         )
                     }
                 }
@@ -76,7 +81,8 @@ fun MenuItem(
                 text = stringResource(id = name),
                 style = EnglishTypography.subtitle2,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(16.dp, 0.dp)
+                modifier = Modifier.padding(16.dp, 0.dp),
+                color = color
             )
         }
         Divider(

@@ -1,5 +1,6 @@
 package com.alphacircle.vroadway.ui.settings
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -23,13 +24,19 @@ import androidx.compose.material.icons.filled.ViewList
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.ui.components.MenuIcon
 import com.alphacircle.vroadway.ui.components.MenuItem
 import com.alphacircle.vroadway.ui.components.TopBar
+import com.alphacircle.vroadway.ui.theme.VroadwayColors
 
 @Composable
 fun Settings(
@@ -66,10 +73,27 @@ fun SettingItemList(
     navigateToNotices: () -> Unit,
     navigateToLicense: () -> Unit,
 ) {
+    /**
+     * TODO: save this value in Internal Storage and get from Internal Storage
+     */
+    var downloadOnly by remember { mutableStateOf(true) }
+    val context = LocalContext.current
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.Wifi),
         name = R.string.setting_item_download,
-        onClick = {}
+        onClick = {
+            when {
+                downloadOnly -> {
+                    downloadOnly = false
+                    Toast.makeText(context, "Downloads on Wi-Fi Only Off", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    downloadOnly = true
+                    Toast.makeText(context, "Downloads on Wi-Fi Only On", Toast.LENGTH_SHORT).show()
+                }
+            }
+        },
+        color = if(downloadOnly) VroadwayColors.primary else VroadwayColors.onSurface
     )
     MenuItem(
         menuIcon = MenuIcon.ImageVectorIcon(Icons.Default.QrCode),

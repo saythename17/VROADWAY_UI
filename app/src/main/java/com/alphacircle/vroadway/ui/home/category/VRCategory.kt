@@ -1,6 +1,10 @@
 package com.alphacircle.vroadway.ui.home.category
 
+import android.content.Context
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,16 +24,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.rounded.Downloading
+import androidx.compose.material.icons.rounded.PauseCircleFilled
 import androidx.compose.material.icons.rounded.PlayCircleFilled
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -45,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -73,12 +81,15 @@ import com.alphacircle.vroadway.ui.theme.Keyline1
 import com.alphacircle.vroadway.ui.theme.KoreanTypography
 import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.util.LockCategoryIconButton
+import com.alphacircle.vroadway.util.VideoDownloader
 import com.alphacircle.vroadway.util.fileSizeConverter
 import com.alphacircle.vroadway.util.runningTimeConverter
 import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
 import com.holix.android.bottomsheetdialog.compose.BottomSheetDialog
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlin.reflect.KFunction3
+import kotlin.reflect.KFunction5
 
 @Composable
 fun VRCategory(
@@ -109,7 +120,8 @@ fun VRCategory(
         ContentList(
             contents = viewState.contents,
             navigateToPlayer = navigateToPlayer,
-            navigateToInfo = navigateToInfo
+            navigateToInfo = navigateToInfo,
+            onDownload = viewModel::onClickDownload
         )
     }
 }
@@ -120,28 +132,28 @@ private fun CategoryPodcasts(
     viewModel: VRCategoryContentViewModel,
     selectedIndex: Int
 ) {
-    var lockCategoryGuideShow by remember { mutableStateOf(false) }
-    var ticketGuideShow by remember { mutableStateOf(false) }
-
-    if (lockCategoryGuideShow) {
-        BottomSheetDialog(onDismissRequest = { lockCategoryGuideShow = false }) {
-            TicketGuide(
-                ticketGuideShow = { ticketGuideShow = true },
-                onDismissRequest = { lockCategoryGuideShow = false })
-        }
-    }
-
-    if (ticketGuideShow) {
-        BottomSheetDialog(onDismissRequest = { ticketGuideShow = false }) {
-            TicketGuideSlidePages { ticketGuideShow = false }
-        }
-    }
+//    var lockCategoryGuideShow by remember { mutableStateOf(false) }
+//    var ticketGuideShow by remember { mutableStateOf(false) }
+//
+//    if (lockCategoryGuideShow) {
+//        BottomSheetDialog(onDismissRequest = { lockCategoryGuideShow = false }) {
+//            TicketGuide(
+//                ticketGuideShow = { ticketGuideShow = true },
+//                onDismissRequest = { lockCategoryGuideShow = false })
+//        }
+//    }
+//
+//    if (ticketGuideShow) {
+//        BottomSheetDialog(onDismissRequest = { ticketGuideShow = false }) {
+//            TicketGuideSlidePages { ticketGuideShow = false }
+//        }
+//    }
 
     CategoryPodcastRow(
         lowLevelCategories = lowLevelCategories,
-        showBottomSheetDialog = {
-            lockCategoryGuideShow = true
-        },
+//        showBottomSheetDialog = {
+//            lockCategoryGuideShow = true
+//        },
         //viewModel::onTogglePodcastFollowed,
         modifier = Modifier.fillMaxWidth(),
         onCategorySelected = viewModel::onCategorySelected,
@@ -152,7 +164,7 @@ private fun CategoryPodcasts(
 @Composable
 private fun CategoryPodcastRow(
     lowLevelCategories: List<LowLevelCategory>,
-    showBottomSheetDialog: (String) -> Unit,
+//    showBottomSheetDialog: (String) -> Unit,
     modifier: Modifier = Modifier,
     onCategorySelected: (Int, Int) -> Unit,
     selectedIndex: Int,
@@ -177,7 +189,7 @@ private fun CategoryPodcastRow(
                 selectedIndex = selectedIndex,
                 onSelectedIndexChange = onSelectedIndexChange,
                 isFollowed = accessType.toBoolean(),
-                showBottomSheetDialog = { showBottomSheetDialog(imageUrl) },
+//                showBottomSheetDialog = { showBottomSheetDialog(imageUrl) },
                 modifier = Modifier.width(128.dp)
             )
 
@@ -194,7 +206,7 @@ private fun TopCategoryRowItem(
     onSelectedIndexChange: (Int) -> Unit,
     isFollowed: Boolean,
     modifier: Modifier = Modifier,
-    showBottomSheetDialog: () -> Unit,
+//    showBottomSheetDialog: () -> Unit,
     podcastImageUrl: String? = null,
 ) {
     Column(
@@ -226,11 +238,11 @@ private fun TopCategoryRowItem(
                 )
             }
 
-            LockCategoryIconButton(
-                onClick = showBottomSheetDialog,
-                isLock = true, //isFollowed,
-                modifier = Modifier.align(Alignment.BottomEnd)
-            )
+//            LockCategoryIconButton(
+//                onClick = showBottomSheetDialog,
+//                isLock = true, //isFollowed,
+//                modifier = Modifier.align(Alignment.BottomEnd)
+//            )
         }
 
         Text(
@@ -250,19 +262,42 @@ private fun TopCategoryRowItem(
 fun ContentList(
     contents: List<Content>,
     asset: List<Asset> = listOf(),
+    onDownload: KFunction5<Int, Context, (Boolean) -> Unit, (Float) -> Unit, (Boolean) -> Unit, Unit>,
     navigateToPlayer: (String) -> Unit,
     navigateToInfo: (Long, Int) -> Unit,
 ) {
+    var lockCategoryGuideShow by remember { mutableStateOf(false) }
+    var ticketGuideShow by remember { mutableStateOf(false) }
+
+    if (lockCategoryGuideShow) {
+        BottomSheetDialog(onDismissRequest = { lockCategoryGuideShow = false }) {
+            TicketGuide(
+                ticketGuideShow = { ticketGuideShow = true },
+                onDismissRequest = { lockCategoryGuideShow = false })
+        }
+    }
+
+    if (ticketGuideShow) {
+        BottomSheetDialog(onDismissRequest = { ticketGuideShow = false }) {
+            TicketGuideSlidePages { ticketGuideShow = false }
+        }
+    }
+
     LazyColumn(
         contentPadding = PaddingValues(0.dp),
         verticalArrangement = Arrangement.Center
     ) {
         items(contents, key = { it.id }) { item ->
             ContentListItem(
+                accessControl = contents.any { !it.accessControl },
                 content = item,
                 asset = asset,
-                onClick = navigateToPlayer,
+//                onClick = navigateToPlayer,
+                onDownload = onDownload,
                 infoOnClick = navigateToInfo,
+                showBottomSheetDialog = {
+                    lockCategoryGuideShow = true
+                },
                 modifier = Modifier.fillParentMaxWidth()
             )
         }
@@ -271,19 +306,39 @@ fun ContentList(
 
 @Composable
 fun ContentListItem(
+    accessControl: Boolean, //TODO remove this, after change into VR way3.0 server
     content: Content,
     asset: List<Asset>,
-    onClick: (String) -> Unit,
+    onDownload: KFunction5<Int, Context, (Boolean) -> Unit, (Float) -> Unit, (Boolean) -> Unit, Unit>,
     infoOnClick: (Long, Int) -> Unit,
+    showBottomSheetDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     var popupExpanded by remember { mutableStateOf(false) }
     val onPopupExpand = { value: Boolean -> popupExpanded = value }
+    var isDownloading by remember { mutableStateOf(false) }
+    val setIsDownloading = { value: Boolean -> isDownloading = value }
+    var downloadProgress by remember { mutableStateOf(0.00f) }
+    val animatedProgress by animateFloatAsState(
+        targetValue = downloadProgress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+    )
+    val setDownloadProgress = { value: Float -> downloadProgress = value }
+    var isDownloadFinished by remember { mutableStateOf(false) }
+    val setIsDownloadFinished = { value: Boolean -> isDownloadFinished = value }
+
+    val context = LocalContext.current
+
+    isDownloadFinished = VideoDownloader(context).isFolderExist(content.id)
+
+    Log.println(Log.DEBUG, "setIsDownloadFinished", "$isDownloadFinished")
+
+    setIsDownloadFinished(VideoDownloader(context).isFolderExist(content.id))
 
     ConstraintLayout(modifier = modifier.clickable { /*onClick(content.title)*/ onPopupExpand(false) }) {
         val (
-            divider, episodeTitle, podcastTitle, image, playIcon,
+            divider, episodeTitle, podcastTitle, image, imageUnderIcon,
+            playIcon, playIndicator,
             date, addPlaylist, overflow, dropdown
         ) = createRefs()
 
@@ -304,27 +359,108 @@ fun ContentListItem(
                 },
         )
 
-        val titleImageBarrier = createBottomBarrier(podcastTitle, image)
-
         Image(
-            imageVector = Icons.Rounded.PlayCircleFilled,
-            contentDescription = stringResource(R.string.cd_play),
-            contentScale = ContentScale.Fit,
-            colorFilter = ColorFilter.tint(LocalContentColor.current),
+            painter = painterResource(id = R.drawable.ic_content_thumbnail_hmd_triangle),
+            colorFilter = ColorFilter.tint(VroadwayColors.surface),
+            contentDescription = null,
             modifier = Modifier
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false, radius = 24.dp)
-                ) { /* TODO */ }
-                .size(48.dp)
-                .padding(6.dp)
-                .semantics { role = Role.Button }
-                .constrainAs(playIcon) {
-                    centerVerticallyTo(image)
+                .size(32.dp, 40.dp)
+                .constrainAs(imageUnderIcon) {
+                    bottom.linkTo(image.bottom, (-22).dp)
                     centerHorizontallyTo(image)
-                }
-//                .graphicsLayer(alpha = 0.8f)
+                },
         )
+
+        //----------------------------play download lock button-------------------------------------
+
+        when {
+            accessControl && content.accessControl -> LockCategoryIconButton(
+                onClick = showBottomSheetDialog,
+                isLock = false, //isFollowed,
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = rememberRipple(bounded = false, radius = 24.dp)
+                    ) { /* TODO */ }
+                    .size(48.dp)
+                    .padding(6.dp)
+                    .semantics { role = Role.Button }
+                    .constrainAs(playIcon) {
+                        centerVerticallyTo(image)
+                        centerHorizontallyTo(image)
+                    }
+            )
+
+            (isDownloadFinished) -> {
+                Image(
+                    imageVector =  Icons.Rounded.PlayCircleFilled,
+                    contentDescription = stringResource(R.string.cd_play),
+                    contentScale = ContentScale.Fit,
+                    colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.8f)),
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(bounded = false, radius = 24.dp)
+                        ) {
+                            /* TODO play vr video */
+                            Toast.makeText(context, "play vr video: ${content.title}", Toast.LENGTH_SHORT).show()
+                        }
+                        .size(48.dp)
+                        .padding(6.dp)
+                        .semantics { role = Role.Button }
+                        .constrainAs(playIcon) {
+                            centerVerticallyTo(image)
+                            centerHorizontallyTo(image)
+                        }
+                )
+            }
+
+            else -> {
+                Image(
+                    imageVector =  if (isDownloading) Icons.Rounded.PauseCircleFilled else Icons.Rounded.Downloading,
+                    contentDescription = stringResource(R.string.cd_play),
+                    contentScale = ContentScale.Fit,
+                    colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.8f)),
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(bounded = false, radius = 24.dp)
+                        ) {
+                            onDownload(
+                                content.id,
+                                context,
+                                setIsDownloading,
+                                setDownloadProgress,
+                                setIsDownloadFinished
+                            )
+                        }
+                        .size(48.dp)
+                        .padding(6.dp)
+                        .semantics { role = Role.Button }
+                        .constrainAs(playIcon) {
+                            centerVerticallyTo(image)
+                            centerHorizontallyTo(image)
+                        }
+                )
+
+                if (isDownloading) {
+                    CircularProgressIndicator(
+                        progress = animatedProgress,
+                        color = VroadwayColors.primary,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .constrainAs(playIndicator) {
+                                centerVerticallyTo(image)
+                                centerHorizontallyTo(image)
+                            }
+                    )
+                }
+            }
+        }
+
+
+        //----------------------------play download lock button-------------------------------------
 
         Text(
             text = content.title,
@@ -406,7 +542,7 @@ fun ContentListItem(
         ContentPopupMenu(
             expanded = popupExpanded,
             onPopupDismiss = onPopupExpand,
-            infoOnClick = { infoOnClick(content.categoryId.toLong(), content.sorting-1) },
+            infoOnClick = { infoOnClick(content.categoryId.toLong(), content.sorting - 1) },
             modifier = Modifier
                 .constrainAs(dropdown) {
                     end.linkTo(parent.end, 16.dp)
@@ -420,16 +556,19 @@ private val MediumDateFormatter by lazy {
     DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
 }
 
-@Preview(showSystemUi = true)
+@Preview()
 @Composable
 fun PreviewEpisodeListItem() {
     AppTheme {
         ContentListItem(
             content = PreviewContent[0],
             asset = listOf(),
-            onClick = { },
-            infoOnClick = { l: Long, i: Int -> },
-            modifier = Modifier.fillMaxWidth()
+            onDownload = { _: Int, _: Context, _: (Boolean) -> Unit, _: (Float) -> Unit, _: (Boolean) -> Unit -> } as KFunction5<Int, Context, (Boolean) -> Unit, (Float) -> Unit, (Boolean) -> Unit, Unit>,
+//            onClick = { },
+            infoOnClick = { _: Long, _: Int -> },
+            modifier = Modifier.fillMaxWidth(),
+            showBottomSheetDialog = {},
+            accessControl = false
         )
     }
 }

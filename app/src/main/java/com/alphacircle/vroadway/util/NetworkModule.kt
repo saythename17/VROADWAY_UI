@@ -1,8 +1,11 @@
 package com.alphacircle.vroadway.util
 
+import android.os.Build
 import android.util.Log
 import com.alphacircle.vroadway.data.Board
 import com.alphacircle.vroadway.data.BoardResponse
+import com.alphacircle.vroadway.data.category.Asset
+import com.alphacircle.vroadway.data.category.AssetResponse
 import com.alphacircle.vroadway.data.category.CategoryResponse
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.ContentResponse
@@ -194,6 +197,52 @@ object NetworkModule {
             }
 
             override fun onFailure(call: Call<BoardResponse>, t: Throwable) {
+                Log.println(Log.DEBUG, "NetworkModule", t.message.toString())
+            }
+        })
+    }
+
+    fun getAssets(contentId: Int, onSuccess: (List<Asset>) -> Unit) {
+        val call: Call<AssetResponse> = createAPI().getAsset(contentId = contentId)
+        val model = Build.MODEL
+        Log.println(Log.DEBUG, "NetworkModule🤖", "contentId: $contentId")
+
+        call.enqueue(object : Callback<AssetResponse> {
+            override fun onResponse(
+                call: Call<AssetResponse>,
+                response: Response<AssetResponse>
+            ) {
+                if (response.isSuccessful) { // <--> response.code == 200
+                    Log.println(Log.DEBUG, "NetworkModule", "isSuccessful: " + response.body().toString())
+
+                    if (response.body()?.assetList == null) {
+                        throw Throwable("get All categories provides null")
+                        Log.println(Log.DEBUG, "NetworkModule", "categories provides null")
+                        return
+                    }
+                    // 성공 처리
+                    var responseList: AssetResponse = response.body()!!
+
+                    val newAssets = responseList.assetList.map { i ->
+                        Asset(
+                            id = i.id,
+                            name = i.name,
+                            contentType = i.contentType,
+                            purpose = i.purpose,
+                            size = i.size,
+                            contentId = i.contentId,
+                            location = i.location,
+                            tag = i.tag
+                        )
+                    }
+                    onSuccess(newAssets)
+                } else { // code == 400
+                    // 실패 처리
+                    Log.println(Log.DEBUG, "NetworkModule", "message: ${response.message()}, errorBody: ${response.errorBody()}, body: ${response.body()}")
+                }
+            }
+
+            override fun onFailure(call: Call<AssetResponse>, t: Throwable) {
                 Log.println(Log.DEBUG, "NetworkModule", t.message.toString())
             }
         })

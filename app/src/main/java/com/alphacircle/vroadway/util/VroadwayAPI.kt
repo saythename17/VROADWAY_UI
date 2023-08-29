@@ -1,9 +1,11 @@
 package com.alphacircle.vroadway.util
 
+import android.os.Build
 import com.alphacircle.vroadway.data.category.ContentResponse
 import com.alphacircle.vroadway.data.BoardResponse
 import com.alphacircle.vroadway.data.RegistryResponse
 import com.alphacircle.vroadway.data.User
+import com.alphacircle.vroadway.data.category.AssetResponse
 import com.alphacircle.vroadway.data.category.CategoryResponse
 import okhttp3.Response
 import retrofit2.Call
@@ -57,13 +59,13 @@ interface VroadwayAPI {
     /**
      * Asset : 컨텐츠별 에셋 조회(유료 컨텐츠일 경우 accessToken 필요)
      **/
-    @GET("/api/assets/contents/id={id}")
+    @GET("/api/assets/contents/{contentId}")
     fun getAsset(
-        @Path("id") id: Int,
+        @Path("contentId") contentId: Int,
         @Query("platform") platform: String = "android",
         @Query("resolution") resolution: String = "L",
-        @Query("ModelNumber") modelNumber: String = "SM-A31"
-    ): Call<ContentResponse>
+        @Query("modelNumber") modelNumber: String = Build.MODEL.toString()
+    ): Call<AssetResponse>
 
     /**
      * Registry : 특정 유저의 모든 시리얼 등록 정보 조회/시리얼 등록(IAP)
