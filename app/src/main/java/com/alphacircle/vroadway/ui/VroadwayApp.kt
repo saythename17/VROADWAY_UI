@@ -64,7 +64,8 @@ fun VroadwayApp(
                     },
                     navigateToInfo = { categoryId, index -> appState.navigateToInfo(categoryId, index) },
                     navigateToAccount = { appState.navigateToAccount() },
-                    navigateToSettings = { appState.navigateToSettings() }
+                    navigateToSettings = { appState.navigateToSettings() },
+                    onRetry = { appState.refreshOnline() }
                 )
             }
             composable(

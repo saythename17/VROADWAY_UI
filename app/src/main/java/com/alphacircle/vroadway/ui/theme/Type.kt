@@ -184,35 +184,35 @@ val KoreanTypography = Typography(
         fontFamily = GmarketSans,
         fontSize = 16.sp,
         fontWeight = FontWeight.Light,
-        lineHeight = 20.sp,
+        lineHeight = 16.sp,
         letterSpacing = 0.15.sp
     ),
     body2 = TextStyle(
         fontFamily = GmarketSans,
         fontSize = 14.sp,
         fontWeight = FontWeight.Light,
-        lineHeight = 20.sp,
+        lineHeight = 14.sp,
         letterSpacing = 0.25.sp
     ),
     button = TextStyle(
         fontFamily = GmarketSans,
         fontSize = 14.sp,
         fontWeight = FontWeight.Bold,
-        lineHeight = 16.sp,
+        lineHeight = 14.sp,
         letterSpacing = 1.25.sp
     ),
     caption = TextStyle(
         fontFamily = GmarketSans,
         fontSize = 12.sp,
         fontWeight = FontWeight.Light,
-        lineHeight = 16.sp,
+        lineHeight = 12.sp,
         letterSpacing = 0.sp
     ),
     overline = TextStyle(
         fontFamily = GmarketSans,
         fontSize = 12.sp,
-        fontWeight = FontWeight.Light,
-        lineHeight = 16.sp,
+        fontWeight = FontWeight.Medium,
+        lineHeight = 12.sp,
         letterSpacing = 1.sp
     ),
 )

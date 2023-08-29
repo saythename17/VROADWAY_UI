@@ -2,9 +2,7 @@ package com.alphacircle.vroadway.util
 
 import android.annotation.SuppressLint
 import android.app.DownloadManager
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
@@ -16,35 +14,31 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
-interface Downloader {
-    fun downloadFile(url: String, videoTitle: String, downloadStateChange: (Boolean) -> Unit)
-}
-
 class AssetDownloader(
     private val context: Context
-) : Downloader {
+) {
     var downloadId: Long = -1
-    var isPaused: Boolean = false
+    var isDownloading: Boolean = false
+    var isDownloadFinished: Boolean = false
+
     private val downloadManager =
         context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    /**
+     *  externalFilesDir: /storage/emulated/0/Android/data/com.alphacircle.vroadway/files/Download/{contentId}
+     **/
+    private val externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
 
-    private val downloadCompleteReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            if (id == downloadId) {
-                // 다운로드 완료 처리
-            }
-        }
-    }
-
-    override fun downloadFile(
+    suspend fun downloadFile(
         url: String,
-        videoTitle: String,
-        downloadStateChange: (Boolean) -> Unit
+        contentId: Int,
+        fileName: String,
+        setIsDownloading: (Boolean) -> Unit,
+        setDownloadProgress: (Float) -> Unit,
+        setIsDownloadFinished: (Boolean) -> Unit
     ) {
         when {
-            isPaused -> resumeDownload()
-//            else -> startDownload(url, videoTitle)
+            isFolderExist(contentId) -> cancelDownload(setIsDownloading, setDownloadProgress)
+            else -> startDownload(url, contentId, fileName, setIsDownloading, setDownloadProgress, setIsDownloadFinished)
         }
     }
 
@@ -57,10 +51,12 @@ class AssetDownloader(
         setDownloadProgress: (Float) -> Unit,
         setIsDownloadFinished: (Boolean) -> Unit
     ) {
+        Log.println(Log.DEBUG, "AssetDownloader", "1️⃣")
+        isDownloading = true
         setIsDownloading(true)
         // DownloadManager로 비디오 다운로드
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val externalFilesContentFolderDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) /** externalFilesDir: /storage/emulated/0/Android/data/com.alphacircle.vroadway/files/Download/{contentId} */
+        val externalFilesContentFolderDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
         val folder = File(externalFilesContentFolderDir, "/$contentId/")
 
         MainScope().launch {
@@ -72,11 +68,12 @@ class AssetDownloader(
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
 
-        val downloadId = downloadManager.enqueue(request)
+        downloadId = downloadManager.enqueue(request)
 
-        var isDownloadFinished = false
+        isDownloadFinished = false
 
         while (!isDownloadFinished) {
+            Log.println(Log.DEBUG, "AssetDownloader", "2️⃣")
             val cursor: Cursor =
                 downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
             if (cursor.moveToFirst() && fileName.contains("acf")) {
@@ -114,27 +111,26 @@ class AssetDownloader(
                 }
             }
         }
-
-//        downloadManager.enqueue(
-//            DownloadManager.Request(Uri.parse(url)).apply {
-//                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//                setDestinationInExternalFilesDir(context, null, videoTitle)
-//            }
-//        )
     }
 
     fun isFolderExist(contentId: Int): Boolean {
-        val externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-//        val folders = File(externalFilesDir, "").listFiles()
-//        return folders.any { it.isDirectory && it.name == contentId.toString() }
         return File(externalFilesDir, contentId.toString()).exists()
     }
 
 
-    fun pauseDownload() {
+    fun cancelDownload(setIsDownloading: (Boolean) -> Unit,
+                       setDownloadProgress: (Float) -> Unit) {
         downloadManager.remove(downloadId)
+        Log.println(Log.DEBUG, "AssetDownloader", "❎")
 
-        isPaused = false
+        MainScope().launch {
+            setIsDownloading(false)
+            setDownloadProgress(0f)
+            Toast.makeText(context, "Cancel Download", Toast.LENGTH_SHORT).show()
+        }
+
+        isDownloading = false
+        isDownloadFinished = true
     }
 
     @SuppressLint("Range")
@@ -148,9 +144,6 @@ class AssetDownloader(
             if (status == DownloadManager.STATUS_PAUSED) {
 //                val downloadUri = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
 //                val resumeDownloadId = downloadManager.remove(downloadId)
-//
-//                // 이어받기를 시작합니다.
-//                saveDownloadIdToPreferences(resumeDownloadId)
 
                 val uri =
                     Uri.parse(cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)))
@@ -162,19 +155,6 @@ class AssetDownloader(
 
         cursor?.close()
     }
-
-    private fun getSavedDownloadIdFromPreferences(): Long {
-        val preferences = context.getSharedPreferences("DownloadPrefs", Context.MODE_PRIVATE)
-        return preferences.getLong("DownloadId", -1L) // return -1L by default value
-    }
-
-    private fun saveDownloadIdToPreferences(downloadId: Long) {
-        val preferences = context.getSharedPreferences("DownloadPrefs", Context.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putLong("DownloadId", downloadId)
-        editor.apply()
-    }
-
 
     @SuppressLint("Range")
     fun getDownloadProgress(): Float {
@@ -198,14 +178,6 @@ class AssetDownloader(
         }
 
         return progress
-    }
-
-    fun unregisterReceiver() {
-        try {
-            context.unregisterReceiver(downloadCompleteReceiver)
-        } catch (e: IllegalArgumentException) {
-            // 예외 처리: 리시버가 이미 등록 해제된 경우
-        }
     }
 
     // 외부 저장소에 비디오 저장

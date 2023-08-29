@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,8 +29,10 @@ import com.alphacircle.vroadway.ui.theme.VroadwayShapes
 fun GradientButton(
     text: String,
     modifier: Modifier = Modifier,
+    shape: Shape = VroadwayShapes.medium,
+    textStyle: TextStyle = KoreanTypography.button,
     onClick: () -> Unit = { },
-    inActive : Boolean = false
+    inActive: Boolean = false
 ) {
     val gradient =
         Brush.linearGradient(
@@ -43,7 +45,7 @@ fun GradientButton(
 //    Brush.horizontalGradient(listOf(VroadwayColors.primary, VroadwayColors.secondary))
     Button(
         modifier = modifier,
-        shape = VroadwayShapes.medium,
+        shape = shape,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
         contentPadding = PaddingValues(),
         onClick = onClick,
@@ -61,9 +63,9 @@ fun GradientButton(
             Text(
                 modifier = Modifier.padding(8.dp),
                 text = text,
-                style = KoreanTypography.button,
+                style = textStyle,
                 color = Color.White,
-                fontSize = 14.sp
+//                fontSize = 14.sp
             )
         }
     }

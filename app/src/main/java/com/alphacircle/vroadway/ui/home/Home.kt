@@ -16,6 +16,8 @@
 
 package com.alphacircle.vroadway.ui.home
 
+import android.annotation.SuppressLint
+import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -64,6 +66,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -81,6 +84,7 @@ import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.MinContrastOfPrimaryVsSurface
 import com.alphacircle.vroadway.util.DynamicThemePrimaryColorsFromImage
 import com.alphacircle.vroadway.util.LockCategoryIconButton
+import com.alphacircle.vroadway.util.NetworkModule
 import com.alphacircle.vroadway.util.contrastAgainst
 import com.alphacircle.vroadway.util.quantityStringResource
 import com.alphacircle.vroadway.util.rememberDominantColorState
@@ -95,6 +99,7 @@ fun Home(
     navigateToInfo: (Long, Int) -> Unit,
     navigateToAccount: () -> Unit,
     navigateToSettings: () -> Unit,
+    onRetry: () -> Unit,
     viewModel: HomeViewModel = viewModel()
 ) {
     val viewState by viewModel.state.collectAsStateWithLifecycle()
@@ -110,11 +115,13 @@ fun Home(
             navigateToInfo = navigateToInfo,
             navigateToAccount = navigateToAccount,
             navigateToSettings = navigateToSettings,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            onRetry = onRetry
         )
     }
 }
 
+@SuppressLint("NewApi")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeContent(
@@ -128,7 +135,8 @@ fun HomeContent(
     navigateToPlayer: (String) -> Unit,
     navigateToInfo: (Long, Int) -> Unit,
     navigateToAccount: () -> Unit,
-    navigateToSettings: () -> Unit
+    navigateToSettings: () -> Unit,
+    onRetry: () -> Unit
 ) {
     Column(
         modifier = modifier.windowInsetsPadding(
@@ -186,6 +194,10 @@ fun HomeContent(
                     navigateToSettings = navigateToSettings
                 )
             }
+        }
+
+        if(!NetworkModule.isOnline(LocalContext.current)) {
+            OfflineView(onRetry)
         }
 
         if (isRefreshing) {

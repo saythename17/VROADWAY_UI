@@ -82,7 +82,7 @@ class VRCategoryContentViewModel(
         NetworkModule.getAssets(contentId, onSuccess = { it ->
             it.map {
                 GlobalScope.launch() {
-                    AssetDownloader(context).startDownload(
+                    AssetDownloader(context).downloadFile(
                         it.location,
                         contentId,
                         it.name,

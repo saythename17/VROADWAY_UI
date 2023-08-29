@@ -32,9 +32,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Downloading
 import androidx.compose.material.icons.rounded.PauseCircleFilled
 import androidx.compose.material.icons.rounded.PlayCircleFilled
+import androidx.compose.material.icons.rounded.RemoveCircle
+import androidx.compose.material.icons.rounded.StopCircle
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -409,7 +412,7 @@ fun ContentListItem(
 
             else -> {
                 Image(
-                    imageVector =  if (isDownloading) Icons.Rounded.PauseCircleFilled else Icons.Rounded.Downloading,
+                    imageVector =  if (isDownloading) Icons.Rounded.Cancel /*Icons.Rounded.PauseCircleFilled*/ else Icons.Rounded.Downloading,
                     contentDescription = stringResource(R.string.cd_play),
                     contentScale = ContentScale.Fit,
                     colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.8f)),

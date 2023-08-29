@@ -41,7 +41,6 @@ import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.ui.theme.VroadwayShapes
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
