@@ -23,8 +23,9 @@ import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.LowLevelCategory
 import com.alphacircle.vroadway.util.NetworkModule
-import com.alphacircle.vroadway.util.VideoDownloader
-import kotlinx.coroutines.coroutineScope
+import com.alphacircle.vroadway.util.AssetDownloader
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -78,11 +79,10 @@ class VRCategoryContentViewModel(
         setDownloadProgress: (Float) -> Unit,
         setIsDownloadFinished: (Boolean) -> Unit
     ) {
-        setIsDownloading(true)
         NetworkModule.getAssets(contentId, onSuccess = { it ->
             it.map {
-                runBlocking {
-                    VideoDownloader(context).startDownload(
+                GlobalScope.launch() {
+                    AssetDownloader(context).startDownload(
                         it.location,
                         contentId,
                         it.name,

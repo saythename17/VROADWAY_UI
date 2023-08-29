@@ -10,7 +10,9 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
@@ -18,7 +20,7 @@ interface Downloader {
     fun downloadFile(url: String, videoTitle: String, downloadStateChange: (Boolean) -> Unit)
 }
 
-class VideoDownloader(
+class AssetDownloader(
     private val context: Context
 ) : Downloader {
     var downloadId: Long = -1
@@ -55,14 +57,15 @@ class VideoDownloader(
         setDownloadProgress: (Float) -> Unit,
         setIsDownloadFinished: (Boolean) -> Unit
     ) {
-//        val downloadUrl =
-//            "https://dev-xion.s3.ap-northeast-2.amazonaws.com/JHOPE.mp4" // 다운로드할 동영상 URL
+        setIsDownloading(true)
         // DownloadManager로 비디오 다운로드
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val externalFilesContentFolderDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) /** externalFilesDir: /storage/emulated/0/Android/data/com.alphacircle.vroadway/files/Download/{contentId} */
         val folder = File(externalFilesContentFolderDir, "/$contentId/")
 
-        Toast.makeText(context, "Start downloading: $fileName", Toast.LENGTH_SHORT).show()
+        MainScope().launch {
+            Toast.makeText(context, "Start downloading: $fileName", Toast.LENGTH_SHORT).show()
+        }
 
         val request = DownloadManager.Request(Uri.parse(url))
             .setDestinationUri(Uri.fromFile(File(folder, fileName)))
@@ -76,12 +79,11 @@ class VideoDownloader(
         while (!isDownloadFinished) {
             val cursor: Cursor =
                 downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
-            if (cursor.moveToFirst()) {
+            if (cursor.moveToFirst() && fileName.contains("acf")) {
                 when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
                     DownloadManager.STATUS_FAILED -> {
                         isDownloadFinished = true
-                        setIsDownloadFinished(true)
-//                        emit(State.run { error(context.getString(R.string.all_error_download_failed)) })
+                        MainScope().launch { setIsDownloadFinished(true) }
                     }
 
                     DownloadManager.STATUS_PAUSED -> {
@@ -96,23 +98,18 @@ class VideoDownloader(
                         if (totalSizeInBytes >= 0) {
                             val downloadedBytes: Long = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
                             val progress = downloadedBytes.toFloat() / totalSizeInBytes
-                            setDownloadProgress(progress)
-                            Log.println(Log.DEBUG, "Downloader♒️", "progress: $progress")
-
-//                            emit(State.downloading(downloadProgress))
+                            MainScope().launch { setDownloadProgress(progress) }
+                            delay(1000)
                         }
-                        delay(1000)
                     }
 
                     DownloadManager.STATUS_SUCCESSFUL -> {
-                        setDownloadProgress(1.0f)
-//                        emit(State.downloading(downloadProgress))
                         isDownloadFinished = true
-                        setIsDownloading(false)
-                        setIsDownloadFinished(true)
-
-                        Toast.makeText(context, "Video saved: $fileName", Toast.LENGTH_SHORT).show()
-//                        emit(State.success(true))
+                        MainScope().launch {
+                            Toast.makeText(context, "Video saved: $fileName", Toast.LENGTH_SHORT).show()
+                            setIsDownloading(false)
+                            setIsDownloadFinished(true)
+                        }
                     }
                 }
             }

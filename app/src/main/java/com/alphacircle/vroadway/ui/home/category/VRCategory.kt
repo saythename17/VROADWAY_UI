@@ -1,10 +1,8 @@
 package com.alphacircle.vroadway.ui.home.category
 
 import android.content.Context
-import android.os.Environment
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,7 +29,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -81,14 +78,13 @@ import com.alphacircle.vroadway.ui.theme.Keyline1
 import com.alphacircle.vroadway.ui.theme.KoreanTypography
 import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.util.LockCategoryIconButton
-import com.alphacircle.vroadway.util.VideoDownloader
+import com.alphacircle.vroadway.util.AssetDownloader
 import com.alphacircle.vroadway.util.fileSizeConverter
 import com.alphacircle.vroadway.util.runningTimeConverter
 import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
 import com.holix.android.bottomsheetdialog.compose.BottomSheetDialog
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import kotlin.reflect.KFunction3
 import kotlin.reflect.KFunction5
 
 @Composable
@@ -319,21 +315,17 @@ fun ContentListItem(
     var isDownloading by remember { mutableStateOf(false) }
     val setIsDownloading = { value: Boolean -> isDownloading = value }
     var downloadProgress by remember { mutableStateOf(0.00f) }
-    val animatedProgress by animateFloatAsState(
-        targetValue = downloadProgress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
-    )
     val setDownloadProgress = { value: Float -> downloadProgress = value }
     var isDownloadFinished by remember { mutableStateOf(false) }
     val setIsDownloadFinished = { value: Boolean -> isDownloadFinished = value }
 
     val context = LocalContext.current
 
-    isDownloadFinished = VideoDownloader(context).isFolderExist(content.id)
+    isDownloadFinished = AssetDownloader(context).isFolderExist(content.id)
 
     Log.println(Log.DEBUG, "setIsDownloadFinished", "$isDownloadFinished")
 
-    setIsDownloadFinished(VideoDownloader(context).isFolderExist(content.id))
+    setIsDownloadFinished(AssetDownloader(context).isFolderExist(content.id))
 
     ConstraintLayout(modifier = modifier.clickable { /*onClick(content.title)*/ onPopupExpand(false) }) {
         val (
@@ -445,7 +437,7 @@ fun ContentListItem(
 
                 if (isDownloading) {
                     CircularProgressIndicator(
-                        progress = animatedProgress,
+                        progress = downloadProgress,
                         color = VroadwayColors.primary,
                         strokeWidth = 2.dp,
                         modifier = Modifier
