@@ -19,6 +19,7 @@ package com.alphacircle.vroadway.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.Graph
+import com.alphacircle.vroadway.data.PodcastStore
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.data.PodcastsRepository
 import kotlinx.collections.immutable.PersistentList
@@ -31,7 +32,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val podcastsRepository: PodcastsRepository = Graph.podcastRepository
+    private val podcastsRepository: PodcastsRepository = Graph.podcastRepository,
+    private val podcastStore: PodcastStore = Graph.podcastStore
 ) : ViewModel() {
     // Holds our currently selected home category
     private val selectedCategory = MutableStateFlow(HomeCategory.Discover)
@@ -50,6 +52,25 @@ class HomeViewModel(
         viewModelScope.launch {
             // Combines the latest value from each of the flows, allowing us to generate a
             // view state instance which only contains the latest values.
+            combine(
+                categories,
+                selectedCategory,
+                podcastStore.followedPodcastsSortedByLastEpisode(limit = 20),
+                refreshing
+            ) { categories, selectedCategory, podcasts, refreshing ->
+                HomeViewState(
+                    homeCategories = categories,
+                    selectedHomeCategory = selectedCategory,
+                    featuredPodcasts = podcasts.toPersistentList(),
+                    refreshing = refreshing,
+                    errorMessage = null /* TODO */
+                )
+            }.catch { throwable ->
+                // TODO: emit a UI error here. For now we'll just rethrow
+                throw throwable
+            }.collect {
+                _state.value = it
+            }
         }
 
         refresh(force = false)
@@ -73,6 +94,7 @@ class HomeViewModel(
 
     fun onPodcastUnfollowed(podcastUri: String) {
         viewModelScope.launch {
+            podcastStore.unfollowPodcast(podcastUri)
         }
     }
 }
