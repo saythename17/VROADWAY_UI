@@ -19,7 +19,6 @@ package com.alphacircle.vroadway.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.Graph
-import com.alphacircle.vroadway.data.PodcastStore
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.data.PodcastsRepository
 import kotlinx.collections.immutable.PersistentList
@@ -33,7 +32,6 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val podcastsRepository: PodcastsRepository = Graph.podcastRepository,
-    private val podcastStore: PodcastStore = Graph.podcastStore
 ) : ViewModel() {
     // Holds our currently selected home category
     private val selectedCategory = MutableStateFlow(HomeCategory.Discover)
@@ -55,13 +53,11 @@ class HomeViewModel(
             combine(
                 categories,
                 selectedCategory,
-                podcastStore.followedPodcastsSortedByLastEpisode(limit = 20),
                 refreshing
-            ) { categories, selectedCategory, podcasts, refreshing ->
+            ) { categories, selectedCategory, refreshing ->
                 HomeViewState(
                     homeCategories = categories,
                     selectedHomeCategory = selectedCategory,
-                    featuredPodcasts = podcasts.toPersistentList(),
                     refreshing = refreshing,
                     errorMessage = null /* TODO */
                 )
@@ -94,7 +90,6 @@ class HomeViewModel(
 
     fun onPodcastUnfollowed(podcastUri: String) {
         viewModelScope.launch {
-            podcastStore.unfollowPodcast(podcastUri)
         }
     }
 }
