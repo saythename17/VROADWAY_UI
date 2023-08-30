@@ -3,8 +3,10 @@ package com.alphacircle.vroadway.ui.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
@@ -30,7 +32,8 @@ fun OfflineView(onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         GuideView()
-        RetryButton(onRetry)
+//        RetryButton(onRetry)
+        Spacer(modifier = Modifier.height(80.dp))
     }
 
 }
@@ -61,16 +64,16 @@ fun GuideView() {
     )
 }
 
-@Composable
-fun RetryButton(onRetry: () -> Unit) {
-    GradientButton(
-        modifier = Modifier.padding(8.dp, 4.dp),
-        text = stringResource(id = R.string.retry_connect_button_text),
-        shape = VroadwayShapes.small,
-        textStyle = KoreanTypography.overline,
-        onClick = onRetry
-    )
-}
+//@Composable
+//fun RetryButton(onRetry: () -> Unit) {
+//    GradientButton(
+//        modifier = Modifier.padding(8.dp, 4.dp),
+//        text = stringResource(id = R.string.retry_connect_button_text),
+//        shape = VroadwayShapes.small,
+//        textStyle = KoreanTypography.overline,
+//        onClick = onRetry
+//    )
+//}
 
 @Preview(showSystemUi = true)
 @Composable

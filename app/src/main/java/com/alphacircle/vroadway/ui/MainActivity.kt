@@ -16,15 +16,38 @@
 
 package com.alphacircle.vroadway.ui
 
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.core.view.WindowCompat
+import com.alphacircle.vroadway.di.DependencyInjectionHelper
+import com.alphacircle.vroadway.ui.home.NetworkStatusViewModel
 import com.alphacircle.vroadway.ui.theme.AppTheme
+import com.alphacircle.vroadway.util.NetworkStatusRepository
+import com.alphacircle.vroadway.util.NetworkStatusState
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 class MainActivity : ComponentActivity() {
+
+    /** The main repo handling network callbacks */
+    private val repo: NetworkStatusRepository by lazy {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            DependencyInjectionHelper.injectRepo(applicationContext)
+        } else {
+            TODO("VERSION.SDK_INT < M")
+        }
+    }
+
+    /** ViewModel for consuming network changes */
+    private val networkViewModel: NetworkStatusViewModel by viewModels {
+        DependencyInjectionHelper.injectViewModelFactory(repo)
+    }
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +62,8 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 VroadwayApp(
                     windowSizeClass,
-                    displayFeatures
+                    displayFeatures,
+                    networkViewModel
                 )
             }
         }

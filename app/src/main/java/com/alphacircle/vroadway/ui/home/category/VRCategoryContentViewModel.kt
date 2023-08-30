@@ -22,15 +22,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.LowLevelCategory
-import com.alphacircle.vroadway.util.NetworkModule
+import com.alphacircle.vroadway.util.RetrofitService
 import com.alphacircle.vroadway.util.AssetDownloader
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class VRCategoryContentViewModel(
     private val categoryId: Long,
@@ -42,7 +40,7 @@ class VRCategoryContentViewModel(
 
     init {
         viewModelScope.launch {
-            NetworkModule.getContents(categoryId,
+            RetrofitService.getContents(categoryId,
                 onSuccess = {
                     Log.println(Log.DEBUG, "VRCategory", it.toString())
                     val contents = it
@@ -56,7 +54,7 @@ class VRCategoryContentViewModel(
     }
 
     fun onCategorySelected(categoryId: Int, index: Int) {
-        NetworkModule.getContents(categoryId.toLong(), onSuccess = { it ->
+        RetrofitService.getContents(categoryId.toLong(), onSuccess = { it ->
             val contents = it
             if (it.isNotEmpty()) _state.update {
                 PodcastCategoryViewState(
@@ -79,7 +77,7 @@ class VRCategoryContentViewModel(
         setDownloadProgress: (Float) -> Unit,
         setIsDownloadFinished: (Boolean) -> Unit
     ) {
-        NetworkModule.getAssets(contentId, onSuccess = { it ->
+        RetrofitService.getAssets(contentId, onSuccess = { it ->
             it.map {
                 GlobalScope.launch() {
                     AssetDownloader(context).downloadFile(

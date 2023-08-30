@@ -17,7 +17,6 @@
 package com.alphacircle.vroadway.ui.home
 
 import android.annotation.SuppressLint
-import android.os.Build
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -61,30 +60,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.data.PodcastWithExtraInfo
-import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.ui.home.discover.Discover
 import com.alphacircle.vroadway.ui.home.my.My
 import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.MinContrastOfPrimaryVsSurface
 import com.alphacircle.vroadway.util.DynamicThemePrimaryColorsFromImage
 import com.alphacircle.vroadway.util.LockCategoryIconButton
-import com.alphacircle.vroadway.util.NetworkModule
+import com.alphacircle.vroadway.util.NetworkStatusState
 import com.alphacircle.vroadway.util.contrastAgainst
 import com.alphacircle.vroadway.util.quantityStringResource
 import com.alphacircle.vroadway.util.rememberDominantColorState
@@ -100,6 +102,7 @@ fun Home(
     navigateToAccount: () -> Unit,
     navigateToSettings: () -> Unit,
     onRetry: () -> Unit,
+    networkViewModel: NetworkStatusViewModel,
     viewModel: HomeViewModel = viewModel()
 ) {
     val viewState by viewModel.state.collectAsStateWithLifecycle()
@@ -116,12 +119,13 @@ fun Home(
             navigateToAccount = navigateToAccount,
             navigateToSettings = navigateToSettings,
             modifier = Modifier.fillMaxSize(),
-            onRetry = onRetry
+            onRetry = onRetry,
+            networkViewModel = networkViewModel
         )
     }
 }
 
-@SuppressLint("NewApi")
+@SuppressLint("NewApi", "StateFlowValueCalledInComposition")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeContent(
@@ -136,7 +140,8 @@ fun HomeContent(
     navigateToInfo: (Long, Int) -> Unit,
     navigateToAccount: () -> Unit,
     navigateToSettings: () -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    networkViewModel: NetworkStatusViewModel
 ) {
     Column(
         modifier = modifier.windowInsetsPadding(
@@ -151,6 +156,15 @@ fun HomeContent(
         val dominantColorState = rememberDominantColorState { color ->
             // We want a color which has sufficient contrast against the surface color
             color.contrastAgainst(surfaceColor) >= MinContrastOfPrimaryVsSurface
+        }
+        var isOffline by remember{ mutableStateOf(false) }
+        // network state listener
+        networkViewModel.networkState.asLiveData().observe(LocalLifecycleOwner.current) { state ->
+            isOffline = when(state) {
+                NetworkStatusState.NetworkStatusDisconnected -> true
+                else -> false
+            }
+
         }
 
         DynamicThemePrimaryColorsFromImage(dominantColorState) {
@@ -196,7 +210,7 @@ fun HomeContent(
             }
         }
 
-        if(!NetworkModule.isOnline(LocalContext.current)) {
+        if (isOffline) {
             OfflineView(onRetry)
         }
 

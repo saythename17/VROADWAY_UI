@@ -32,6 +32,7 @@ import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.ui.account.Account
 import com.alphacircle.vroadway.ui.account.PurchasedHistory
 import com.alphacircle.vroadway.ui.home.Home
+import com.alphacircle.vroadway.ui.home.NetworkStatusViewModel
 import com.alphacircle.vroadway.ui.info.Info
 import com.alphacircle.vroadway.ui.player.PlayerScreen
 import com.alphacircle.vroadway.ui.player.PlayerViewModel
@@ -45,6 +46,7 @@ import com.alphacircle.vroadway.ui.splash.Splash
 fun VroadwayApp(
     windowSizeClass: WindowSizeClass,
     displayFeatures: List<DisplayFeature>,
+    networkViewModel: NetworkStatusViewModel,
     appState: VroadwayAppState = rememberVroadwayAppState()
 ) {
     val infoArgCategoryId = "categoryId"
@@ -65,7 +67,8 @@ fun VroadwayApp(
                     navigateToInfo = { categoryId, index -> appState.navigateToInfo(categoryId, index) },
                     navigateToAccount = { appState.navigateToAccount() },
                     navigateToSettings = { appState.navigateToSettings() },
-                    onRetry = { appState.refreshOnline() }
+                    onRetry = { appState.navigateToHome() },
+                    networkViewModel = networkViewModel
                 )
             }
             composable(

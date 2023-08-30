@@ -4,14 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.data.Board
-import com.alphacircle.vroadway.data.category.Content
-import com.alphacircle.vroadway.data.category.HighLevelCategory
-import com.alphacircle.vroadway.util.NetworkModule
+import com.alphacircle.vroadway.util.RetrofitService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Duration
 
 class BoardViewModel(
     boardType: String,
@@ -23,7 +19,7 @@ class BoardViewModel(
 
     init {
         viewModelScope.launch {
-            NetworkModule.getBoards(boardType,
+            RetrofitService.getBoards(boardType,
                 onSuccess = {
                 Log.println(Log.DEBUG, "BoardViewModel", it.toString())
                 if(it.isNotEmpty()) state.value.boardList = it

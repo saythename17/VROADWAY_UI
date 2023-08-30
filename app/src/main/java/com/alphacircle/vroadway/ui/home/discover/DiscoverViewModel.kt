@@ -1,10 +1,9 @@
 package com.alphacircle.vroadway.ui.home.discover
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.data.category.HighLevelCategory
-import com.alphacircle.vroadway.util.NetworkModule
+import com.alphacircle.vroadway.util.RetrofitService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -18,7 +17,7 @@ class DiscoverViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            NetworkModule.getAllCategories {
+            RetrofitService.getAllCategories {
                 if(it.isNotEmpty() && state.value.selectedCategory == null) {
                     state.value.selectedCategory = it[0]
                     state.value.categories = it

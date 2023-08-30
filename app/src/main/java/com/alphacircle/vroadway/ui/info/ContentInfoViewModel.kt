@@ -1,16 +1,13 @@
 package com.alphacircle.vroadway.ui.info
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.HighLevelCategory
-import com.alphacircle.vroadway.util.NetworkModule
+import com.alphacircle.vroadway.util.RetrofitService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Duration
 
 data class ContentInfoUiState(
     val title: String = "",
@@ -29,7 +26,7 @@ class ContentInfoViewModel(
 
     init {
         viewModelScope.launch {
-            NetworkModule.getContents(categoryId,
+            RetrofitService.getContents(categoryId,
                 onSuccess = {
                 if(it.isNotEmpty()) state.value.content = it[index]
             })
