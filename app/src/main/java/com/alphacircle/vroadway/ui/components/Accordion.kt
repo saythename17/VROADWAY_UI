@@ -1,6 +1,7 @@
 package com.alphacircle.vroadway.ui.components
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.text.Html
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -56,7 +57,7 @@ fun Accordion(
                 elevation = 1.dp,
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                AccordionContent(board.description)
+                AccordionContent(if(boardType == "policy") Html.fromHtml(board.description).toString() else board.description)
             }
         }
     }
