@@ -27,8 +27,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.alphacircle.vroadway.Graph
-import com.alphacircle.vroadway.data.EpisodeStore
-import com.alphacircle.vroadway.data.PodcastStore
 import java.time.Duration
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -47,8 +45,6 @@ data class PlayerUiState(
  * ViewModel that handles the business logic and screen state of the Player screen
  */
 class PlayerViewModel(
-    episodeStore: EpisodeStore,
-    podcastStore: PodcastStore,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -61,15 +57,6 @@ class PlayerViewModel(
 
     init {
         viewModelScope.launch {
-            val episode = episodeStore.episodeWithUri(episodeUri).first()
-            val podcast = podcastStore.podcastWithUri(episode.podcastUri).first()
-            uiState = PlayerUiState(
-                title = episode.title,
-                duration = episode.duration,
-                podcastName = podcast.title,
-                summary = episode.summary ?: "",
-                podcastImageUrl = podcast.imageUrl ?: ""
-            )
         }
     }
 
@@ -78,8 +65,6 @@ class PlayerViewModel(
      */
     companion object {
         fun provideFactory(
-            episodeStore: EpisodeStore = Graph.episodeStore,
-            podcastStore: PodcastStore = Graph.podcastStore,
             owner: SavedStateRegistryOwner,
             defaultArgs: Bundle? = null,
         ): AbstractSavedStateViewModelFactory =
@@ -90,7 +75,7 @@ class PlayerViewModel(
                     modelClass: Class<T>,
                     handle: SavedStateHandle
                 ): T {
-                    return PlayerViewModel(episodeStore, podcastStore, handle) as T
+                    return PlayerViewModel(handle) as T
                 }
             }
     }
