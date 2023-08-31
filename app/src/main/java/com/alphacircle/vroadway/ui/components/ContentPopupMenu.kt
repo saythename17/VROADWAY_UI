@@ -1,5 +1,7 @@
 package com.alphacircle.vroadway.ui.components
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,9 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.alphacircle.vroadway.util.AssetManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 data class PopupMenuItem(
     val icon: ImageVector,
@@ -35,15 +44,23 @@ data class PopupMenuItem(
     val onClick: () -> Unit
 )
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun ContentPopupMenu(
+    contentId: Int,
     expanded: Boolean,
     onPopupDismiss: (Boolean) -> Unit,
     modifier: Modifier,
-    infoOnClick: () -> Unit
+    infoOnClick: () -> Unit,
 ) {
     var dialogVisible by remember { mutableStateOf(false) }
-    
+    val context = LocalContext.current
+    val scope = CoroutineScope(Dispatchers.Default)
+    val waitAndDeleteAssets = scope.launch {
+        delay(3600L)
+        if (isActive) AssetManager(context = context).deleteAssets(contentId)
+    }
+
     Box(
         modifier = modifier
     ) {
@@ -71,7 +88,10 @@ fun ContentPopupMenu(
                     icon = Icons.Filled.Delete,
                     text = "Delete",
                     contentDescription = "Delete",
-                    onClick = { dialogVisible = true }
+                    onClick = {
+                        dialogVisible = true
+                        waitAndDeleteAssets.start()
+                    }
                 )
             )
             items.forEachIndexed { _, item ->
@@ -99,6 +119,7 @@ fun ContentPopupMenu(
                                         modifier = Modifier.padding(8.dp),
                                     )
                                 }
+
                             item.text == "Delete" ->
                                 Row {
                                     Icon(
@@ -128,7 +149,13 @@ fun ContentPopupMenu(
                 }
             }
         }
-        DeleteCancelableToastDialog(onDismissRequest = { dialogVisible = false }, show = dialogVisible)
+        DeleteCancelableToastDialog(
+            onDismissRequest = { dialogVisible = false },
+            show = dialogVisible,
+            cancelDeleteTask = {
+                waitAndDeleteAssets.cancel()
+            }
+        )
     }
 }
 
@@ -136,12 +163,14 @@ fun ContentPopupMenu(
 @Composable
 fun PreviewContentPopupMenu() {
     ConstraintLayout {
-        val ( dropdown) = createRefs()
-        ContentPopupMenu(expanded = true, onPopupDismiss = {}, modifier = Modifier
+        val (dropdown) = createRefs()
+        ContentPopupMenu(
+            contentId = 0, expanded = true, onPopupDismiss = {},
+            modifier = Modifier
                 .constrainAs(dropdown) {
                     top.linkTo(parent.top, 16.dp)
                 }
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {}
     }
 }

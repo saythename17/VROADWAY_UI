@@ -20,10 +20,11 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alphacircle.vroadway.data.category.Asset
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.LowLevelCategory
 import com.alphacircle.vroadway.util.RetrofitService
-import com.alphacircle.vroadway.util.AssetDownloader
+import com.alphacircle.vroadway.util.AssetManager
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -70,7 +71,7 @@ class VRCategoryContentViewModel(
         })
     }
 
-    fun onClickDownload(
+    fun onClickContentButton(
         contentId: Int,
         context: Context,
         setIsDownloading: (Boolean) -> Unit,
@@ -80,7 +81,7 @@ class VRCategoryContentViewModel(
         RetrofitService.getAssets(contentId, onSuccess = { it ->
             it.map {
                 GlobalScope.launch() {
-                    AssetDownloader(context).downloadFile(
+                    AssetManager(context).downloadFile(
                         it.location,
                         contentId,
                         it.name,
@@ -98,4 +99,5 @@ data class PodcastCategoryViewState(
     var selectedCategory: LowLevelCategory? = null,
     val categoryIndex: Int = 0,
     var contents: List<Content> = emptyList(),
+    var assets: List<Asset> = emptyList()
 )

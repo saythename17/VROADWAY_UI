@@ -34,10 +34,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Downloading
-import androidx.compose.material.icons.rounded.PauseCircleFilled
 import androidx.compose.material.icons.rounded.PlayCircleFilled
-import androidx.compose.material.icons.rounded.RemoveCircle
-import androidx.compose.material.icons.rounded.StopCircle
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -81,7 +78,7 @@ import com.alphacircle.vroadway.ui.theme.Keyline1
 import com.alphacircle.vroadway.ui.theme.KoreanTypography
 import com.alphacircle.vroadway.ui.theme.VroadwayColors
 import com.alphacircle.vroadway.util.LockCategoryIconButton
-import com.alphacircle.vroadway.util.AssetDownloader
+import com.alphacircle.vroadway.util.AssetManager
 import com.alphacircle.vroadway.util.fileSizeConverter
 import com.alphacircle.vroadway.util.runningTimeConverter
 import com.alphacircle.vroadway.util.viewModelProviderFactoryOf
@@ -120,7 +117,7 @@ fun VRCategory(
             contents = viewState.contents,
             navigateToPlayer = navigateToPlayer,
             navigateToInfo = navigateToInfo,
-            onDownload = viewModel::onClickDownload
+            onDownload = viewModel::onClickContentButton
         )
     }
 }
@@ -131,29 +128,8 @@ private fun CategoryPodcasts(
     viewModel: VRCategoryContentViewModel,
     selectedIndex: Int
 ) {
-//    var lockCategoryGuideShow by remember { mutableStateOf(false) }
-//    var ticketGuideShow by remember { mutableStateOf(false) }
-//
-//    if (lockCategoryGuideShow) {
-//        BottomSheetDialog(onDismissRequest = { lockCategoryGuideShow = false }) {
-//            TicketGuide(
-//                ticketGuideShow = { ticketGuideShow = true },
-//                onDismissRequest = { lockCategoryGuideShow = false })
-//        }
-//    }
-//
-//    if (ticketGuideShow) {
-//        BottomSheetDialog(onDismissRequest = { ticketGuideShow = false }) {
-//            TicketGuideSlidePages { ticketGuideShow = false }
-//        }
-//    }
-
     CategoryPodcastRow(
         lowLevelCategories = lowLevelCategories,
-//        showBottomSheetDialog = {
-//            lockCategoryGuideShow = true
-//        },
-        //viewModel::onTogglePodcastFollowed,
         modifier = Modifier.fillMaxWidth(),
         onCategorySelected = viewModel::onCategorySelected,
         selectedIndex = selectedIndex
@@ -163,15 +139,12 @@ private fun CategoryPodcasts(
 @Composable
 private fun CategoryPodcastRow(
     lowLevelCategories: List<LowLevelCategory>,
-//    showBottomSheetDialog: (String) -> Unit,
     modifier: Modifier = Modifier,
     onCategorySelected: (Int, Int) -> Unit,
     selectedIndex: Int,
 ) {
     val lastIndex = lowLevelCategories.size - 1
-//    var selectedIndex by remember { mutableStateOf(0) }
     val onSelectedIndexChange = { index: Int ->
-//        selectedIndex = index
         onCategorySelected(lowLevelCategories[index].id, index)
     }
     LazyRow(
@@ -180,7 +153,6 @@ private fun CategoryPodcastRow(
     ) {
         itemsIndexed(items = lowLevelCategories) { index: Int,
                                                    (_, _, name, accessType, _, _, imageUrl): LowLevelCategory ->
-
             TopCategoryRowItem(
                 podcastTitle = name,
                 podcastImageUrl = imageUrl,
@@ -188,7 +160,6 @@ private fun CategoryPodcastRow(
                 selectedIndex = selectedIndex,
                 onSelectedIndexChange = onSelectedIndexChange,
                 isFollowed = accessType.toBoolean(),
-//                showBottomSheetDialog = { showBottomSheetDialog(imageUrl) },
                 modifier = Modifier.width(128.dp)
             )
 
@@ -205,7 +176,6 @@ private fun TopCategoryRowItem(
     onSelectedIndexChange: (Int) -> Unit,
     isFollowed: Boolean,
     modifier: Modifier = Modifier,
-//    showBottomSheetDialog: () -> Unit,
     podcastImageUrl: String? = null,
 ) {
     Column(
@@ -236,12 +206,6 @@ private fun TopCategoryRowItem(
                         .clip(MaterialTheme.shapes.medium),
                 )
             }
-
-//            LockCategoryIconButton(
-//                onClick = showBottomSheetDialog,
-//                isLock = true, //isFollowed,
-//                modifier = Modifier.align(Alignment.BottomEnd)
-//            )
         }
 
         Text(
@@ -291,7 +255,6 @@ fun ContentList(
                 accessControl = contents.any { !it.accessControl },
                 content = item,
                 asset = asset,
-//                onClick = navigateToPlayer,
                 onDownload = onDownload,
                 infoOnClick = navigateToInfo,
                 showBottomSheetDialog = {
@@ -323,14 +286,16 @@ fun ContentListItem(
     val setIsDownloadFinished = { value: Boolean -> isDownloadFinished = value }
 
     val context = LocalContext.current
+    val asset = AssetManager(context)
 
-    isDownloadFinished = AssetDownloader(context).isFolderExist(content.id)
+    Log.println(
+        Log.DEBUG,
+        "AssetDownloader",
+        "content.size= ${content.size}, getTotalFileSize= ${asset.getTotalFileSize(content.id)}"
+    )
+    setIsDownloadFinished(asset.isFolderExist(content.id) && (asset.getTotalFileSize(content.id) >= content.size))
 
-    Log.println(Log.DEBUG, "setIsDownloadFinished", "$isDownloadFinished")
-
-    setIsDownloadFinished(AssetDownloader(context).isFolderExist(content.id))
-
-    ConstraintLayout(modifier = modifier.clickable { /*onClick(content.title)*/ onPopupExpand(false) }) {
+    ConstraintLayout(modifier = modifier.clickable { onPopupExpand(false) }) {
         val (
             divider, episodeTitle, podcastTitle, image, imageUnderIcon,
             playIcon, playIndicator,
@@ -398,7 +363,13 @@ fun ContentListItem(
                             indication = rememberRipple(bounded = false, radius = 24.dp)
                         ) {
                             /* TODO play vr video */
-                            Toast.makeText(context, "play vr video: ${content.title}", Toast.LENGTH_SHORT).show()
+                            Toast
+                                .makeText(
+                                    context,
+                                    "play vr video: ${content.title}",
+                                    Toast.LENGTH_SHORT
+                                )
+                                .show()
                         }
                         .size(48.dp)
                         .padding(6.dp)
@@ -535,6 +506,7 @@ fun ContentListItem(
         )
 
         ContentPopupMenu(
+            contentId = content.id,
             expanded = popupExpanded,
             onPopupDismiss = onPopupExpand,
             infoOnClick = { infoOnClick(content.categoryId.toLong(), content.sorting - 1) },

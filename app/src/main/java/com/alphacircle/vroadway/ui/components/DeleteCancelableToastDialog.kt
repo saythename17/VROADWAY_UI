@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DeleteCancelableToastDialog(
     show: Boolean,
+    cancelDeleteTask: () -> Unit,
     onDismissRequest: () -> Unit,
     properties: DialogProperties = DialogProperties(),
 ) {
@@ -66,7 +67,10 @@ fun DeleteCancelableToastDialog(
                     modifier = Modifier
                         .weight(0.3f, true)
                         .padding(32.dp, 0.dp, 0.dp, 0.dp)
-                        .clickable { },
+                        .clickable {
+                            cancelDeleteTask()
+                            onDismissRequest()
+                        },
                     textAlign = TextAlign.End,
                     color = VroadwayColors.primary,
                 )
@@ -88,5 +92,8 @@ fun DeleteCancelableToastDialog(
 @Composable
 fun PreviewToastDialog() {
     var show by remember { mutableStateOf(true) }
-    DeleteCancelableToastDialog(onDismissRequest = { show = false }, show = show)
+    DeleteCancelableToastDialog(
+        onDismissRequest = { show = false },
+        show = show,
+        cancelDeleteTask = {})
 }

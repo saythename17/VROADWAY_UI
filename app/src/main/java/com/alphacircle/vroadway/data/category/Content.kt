@@ -14,5 +14,7 @@ data class Content(
     var sorting: Int = 0,
     var runningTime: Long = 0,
     var categoryId: Int = 0,
+    var size: Long = 286278431L,
+    var downloadProgress: Float = 0f,
     @SerializedName("banner") var bannerUrl: String? = null
 )
