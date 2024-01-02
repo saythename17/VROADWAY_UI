@@ -3,11 +3,13 @@ package com.alphacircle.vroadway.util
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,7 +27,7 @@ class AssetManager(
     /**
      *  externalFilesDir: /storage/emulated/0/Android/data/com.alphacircle.vroadway/files/Download/{contentId}
      **/
-    private val externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+    private val externalPath = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
 
     suspend fun downloadFile(
         url: String,
@@ -76,12 +78,12 @@ class AssetManager(
             Toast.makeText(context, "Start downloading: $fileName", Toast.LENGTH_SHORT).show()
         }
 
-        val folder = File(externalFilesDir, "/$contentId/")
+        val folder = File(externalPath, "/$contentId/")
         folder.mkdirs()
 
         val request = DownloadManager.Request(Uri.parse(url))
             .setDestinationUri(Uri.fromFile(File(folder, fileName)))
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
 
         downloadId = downloadManager.enqueue(request)
@@ -130,18 +132,18 @@ class AssetManager(
         }
     }
     fun deleteAssets(contentId: Int) {
-        if(isFolderExist(contentId)) File(externalFilesDir, "$contentId").deleteRecursively()
+        if(isFolderExist(contentId)) File(externalPath, "$contentId").deleteRecursively()
     }
 
     fun isFolderExist(contentId: Int): Boolean {
-        File(externalFilesDir, "").listFiles().map { it -> Log.println(Log.DEBUG, "AssetDownloader", "🌶️${it.absolutePath}") }
-        Log.println(Log.DEBUG, "AssetDownloader", "$contentId exist? ❤️${File(externalFilesDir, "$contentId").exists()}")
-        return File(externalFilesDir, "$contentId").exists()
+        File(externalPath, "").listFiles().map { it -> Log.println(Log.DEBUG, "AssetDownloader", "🌶️${it.absolutePath}") }
+        Log.println(Log.DEBUG, "AssetDownloader", "$contentId exist? ❤️${File(externalPath, "$contentId").exists()}")
+        return File(externalPath, "$contentId").exists()
     }
 
     fun getTotalFileSize(contentId: Int): Long {
         return when {
-            isFolderExist(contentId) -> File(externalFilesDir, "$contentId").listFiles().sumOf { it.length() }
+            isFolderExist(contentId) -> File(externalPath, "$contentId").listFiles().sumOf { it.length() }
             else -> 0L
         }
     }

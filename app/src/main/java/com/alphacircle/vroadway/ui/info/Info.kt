@@ -45,11 +45,12 @@ fun Info(
     categoryId: Long,
     index: Int
 ) {
-    val surfaceColor = MaterialTheme.colors.surface
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .background(VroadwayColors.surface)
     ) {
         val (
             backButton, bgImage, infoContainer
@@ -61,10 +62,10 @@ fun Info(
         AsyncImage(
             model = viewState.content?.bannerUrl,
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(360.dp)
+                .height(400.dp)
                 .constrainAs(bgImage) {
                     start.linkTo(parent.start)
                 },
@@ -84,7 +85,6 @@ fun Info(
         InfoSheet(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(40.dp, 40.dp, 0.dp, 0.dp))
                 .background(MaterialTheme.colors.surface)
                 .constrainAs(infoContainer) {
                     top.linkTo(bgImage.bottom, (-32).dp)
@@ -115,16 +115,16 @@ fun BackButton(onBackPress: () -> Unit, modifier: Modifier) {
 @Composable
 fun InfoSheet(modifier: Modifier, viewState: ContentInfoViewState) {
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
+        modifier = modifier.background(VroadwayColors.surface)
     ) {
         Column(modifier = Modifier
-            .padding(40.dp)
+            .padding(24.dp, 16.dp)
             ) {
             Text(
                 text = viewState.content?.title?: "",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(0.dp, 16.dp, 0.dp, 8.dp),
+                    .padding(0.dp, 8.dp, 0.dp, 8.dp),
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colors.primary
@@ -144,12 +144,12 @@ fun InfoSheet(modifier: Modifier, viewState: ContentInfoViewState) {
                 text = Html.fromHtml(description).toString(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(0.dp, 40.dp, 0.dp, 400.dp),
+                    .padding(0.dp, 40.dp, 0.dp, 40.dp),
                 style = KoreanTypography.body2,
                 color = MaterialTheme.colors.onSurface
             )
 
-            Spacer(modifier = Modifier.height(80.dp))
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }

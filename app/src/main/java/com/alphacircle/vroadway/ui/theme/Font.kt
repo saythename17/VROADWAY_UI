@@ -55,7 +55,7 @@ val EnglishTypography = Typography(
     h3 = TextStyle(
         fontFamily = Montserrat,
         fontSize = 48.sp,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Light,
         lineHeight = 59.sp
     ),
     h4 = TextStyle(
@@ -73,13 +73,13 @@ val EnglishTypography = Typography(
     h6 = TextStyle(
         fontFamily = Montserrat,
         fontSize = 20.sp,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         lineHeight = 24.sp
     ),
     subtitle1 = TextStyle(
         fontFamily = Montserrat,
         fontSize = 16.sp,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         lineHeight = 20.sp,
         letterSpacing = 0.5.sp
     ),

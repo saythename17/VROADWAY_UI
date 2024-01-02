@@ -48,6 +48,7 @@ sealed class Screen(val route: String) {
     object Guides : Screen("guides")
     object Notices : Screen("notices")
     object License : Screen("license")
+    object Policy : Screen("policy")
     object Player : Screen("player/{episodeUri}") {
         fun createRoute(episodeUri: String) = "player/$episodeUri"
     }
@@ -108,6 +109,9 @@ class VroadwayAppState(
 
     fun navigateToLicense() {
         navController.navigate(Screen.License.route)
+    }
+    fun navigateToPolicy() {
+        navController.navigate(Screen.Policy.route)
     }
 
     fun navigateToInfo(categoryId: Long, index: Int) {

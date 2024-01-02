@@ -27,9 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.alphacircle.vroadway.R
+import com.alphacircle.vroadway.ui.account.DeleteUserAlertDialog
 import com.alphacircle.vroadway.util.AssetManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,6 +57,8 @@ fun ContentPopupMenu(
     infoOnClick: () -> Unit,
 ) {
     var dialogVisible by remember { mutableStateOf(false) }
+    var openAlertDialog by remember { mutableStateOf(false) }
+    val onOpenAlertDialog = { value: Boolean -> openAlertDialog = value }
     val context = LocalContext.current
     val scope = CoroutineScope(Dispatchers.Default)
     val waitAndDeleteAssets = scope.launch {
@@ -89,6 +94,7 @@ fun ContentPopupMenu(
                     text = "Delete",
                     contentDescription = "Delete",
                     onClick = {
+                        onOpenAlertDialog(true)
                         dialogVisible = true
                         waitAndDeleteAssets.start()
                     }
@@ -149,14 +155,44 @@ fun ContentPopupMenu(
                 }
             }
         }
-        DeleteCancelableToastDialog(
-            onDismissRequest = { dialogVisible = false },
-            show = dialogVisible,
-            cancelDeleteTask = {
-                waitAndDeleteAssets.cancel()
+
+
+        when {
+            openAlertDialog -> {
+                DeleteContentAlertDialog(
+                    onDismissRequest = { onOpenAlertDialog(false) },
+                    onConfirmation = {
+                        onOpenAlertDialog(false)
+                        // TODO: Add logic here to handle confirmation.
+                        println("Confirmation registered")
+                    },
+                )
             }
-        )
+        }
+
+//        DeleteCancelableToastDialog(
+//            onDismissRequest = { dialogVisible = false },
+//            show = dialogVisible,
+//            cancelDeleteTask = {
+//                waitAndDeleteAssets.cancel()
+//            }
+//        )
     }
+}
+
+@Composable
+fun DeleteContentAlertDialog (
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+) {
+    AcAlertDialog(
+        onDismissRequest = { onDismissRequest() },
+        onConfirmation = { onConfirmation() },
+        dialogTitle = stringResource(id = R.string.delete_content_alert_dialog_title),
+        dialogText = null,
+        confirmText = null,
+        dismissText = null,
+    )
 }
 
 @Preview()

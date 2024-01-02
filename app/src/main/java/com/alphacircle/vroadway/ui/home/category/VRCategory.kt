@@ -54,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -199,8 +200,8 @@ private fun TopCategoryRowItem(
                     modifier = Modifier
                         .fillMaxSize()
                         .border(
-                            4.dp,
-                            if (index == selectedIndex) VroadwayColors.primary else Color.Transparent,
+                            1.dp,
+                            if (index == selectedIndex) VroadwayColors.primaryVariant else Color.Transparent,
                             MaterialTheme.shapes.medium
                         )
                         .clip(MaterialTheme.shapes.medium),
@@ -210,8 +211,9 @@ private fun TopCategoryRowItem(
 
         Text(
             text = podcastTitle,
-            color = if (index == selectedIndex) VroadwayColors.primary else VroadwayColors.onSurface,
-            style = MaterialTheme.typography.body2,
+            textAlign = TextAlign.Center,
+            color = if (index == selectedIndex) VroadwayColors.primaryVariant else VroadwayColors.onSecondary,
+            style = EnglishTypography.subtitle2,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -311,8 +313,8 @@ fun ContentListItem(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(104.dp, 64.dp)
-                .clip(MaterialTheme.shapes.large)
+                .size(124.dp, 64.dp)
+                .clip(MaterialTheme.shapes.medium)
                 .constrainAs(image) {
                     start.linkTo(parent.start, 24.dp)
                     top.linkTo(parent.top, 16.dp)
@@ -324,7 +326,7 @@ fun ContentListItem(
             colorFilter = ColorFilter.tint(VroadwayColors.surface),
             contentDescription = null,
             modifier = Modifier
-                .size(32.dp, 40.dp)
+                .size(40.dp, 40.dp)
                 .constrainAs(imageUnderIcon) {
                     bottom.linkTo(image.bottom, (-22).dp)
                     centerHorizontallyTo(image)
@@ -439,7 +441,7 @@ fun ContentListItem(
                     top.linkTo(parent.top, 24.dp)
                     height = preferredWrapContent
                 }
-                .width(180.dp)
+                .width(160.dp)
         )
 
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {

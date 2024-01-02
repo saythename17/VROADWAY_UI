@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.alphacircle.vroadway.R
 import com.alphacircle.vroadway.ui.theme.AppTheme
 import com.alphacircle.vroadway.ui.theme.KoreanTypography
+import com.alphacircle.vroadway.ui.theme.VroadwayColors
 
 @Composable
 fun NoListView(text: String) {
@@ -24,7 +25,7 @@ fun NoListView(text: String) {
                 .padding(40.dp),
             textAlign = TextAlign.Center,
             style = KoreanTypography.body2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
+            color = VroadwayColors.onSecondary
         )
     }
 }

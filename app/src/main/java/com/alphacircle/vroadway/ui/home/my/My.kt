@@ -18,8 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.R
-import com.alphacircle.vroadway.data.Category
-import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.HighLevelCategory
 import com.alphacircle.vroadway.ui.components.NoListView
 import com.alphacircle.vroadway.ui.home.discover.DiscoverViewModel
@@ -31,7 +29,7 @@ fun My(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        TitleBar(title = stringResource(id = R.string.home_my_collections))
+        NavigationBar(title = stringResource(id = R.string.home_my_collections))
 
         val viewModel: DiscoverViewModel = viewModel()
         val viewState by viewModel.state.collectAsStateWithLifecycle()
@@ -72,7 +70,7 @@ fun My(
 
 
 @Composable
-fun TitleBar(title: String) {
+fun NavigationBar(title: String) {
     Divider(
         color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f),
     )
@@ -92,12 +90,12 @@ fun TitleBar(title: String) {
 
 @Preview
 @Composable
-fun PreviewTitleBar() {
-    TitleBar(stringResource(id = R.string.home_my_collections))
+fun PreviewNavigationBar() {
+    NavigationBar(stringResource(id = R.string.home_my_collections))
 }
 
 @Preview
 @Composable
 fun PreviewMy() {
-//    My(navigateToPlayer = {}, navigateToInfo = , Modifier)
+    My(navigateToPlayer = {}, navigateToInfo = { _: Long, _: Int -> }, Modifier)
 }

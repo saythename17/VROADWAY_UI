@@ -18,6 +18,7 @@ package com.alphacircle.vroadway.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,6 +84,7 @@ import com.alphacircle.vroadway.data.PodcastWithExtraInfo
 import com.alphacircle.vroadway.ui.home.discover.Discover
 import com.alphacircle.vroadway.ui.home.my.My
 import com.alphacircle.vroadway.ui.theme.AppTheme
+import com.alphacircle.vroadway.ui.theme.KoreanTypography
 import com.alphacircle.vroadway.ui.theme.MinContrastOfPrimaryVsSurface
 import com.alphacircle.vroadway.util.DynamicThemePrimaryColorsFromImage
 import com.alphacircle.vroadway.util.LockCategoryIconButton
@@ -203,7 +205,7 @@ fun HomeContent(
                     backgroundColor = appBarColor,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(0.dp, 16.dp),
+                        .padding(8.dp, 16.dp),
                     navigateToAccount = navigateToAccount,
                     navigateToSettings = navigateToSettings
                 )
@@ -257,7 +259,7 @@ fun HomeAppBar(
 ) {
     TopAppBar(
         title = {
-            Icon(
+            Image(
                 painter = painterResource(R.drawable.app_title_logo),
                 contentDescription = stringResource(R.string.app_name),
                 modifier = Modifier
@@ -318,7 +320,7 @@ private fun HomeCategoryTabs(
                             HomeCategory.My -> stringResource(R.string.home_my)
                             HomeCategory.Discover -> stringResource(R.string.home_discover)
                         },
-                        style = MaterialTheme.typography.body2
+                        style = KoreanTypography.subtitle2
                     )
                 }
             )

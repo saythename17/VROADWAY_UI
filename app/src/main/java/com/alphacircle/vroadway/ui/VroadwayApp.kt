@@ -37,6 +37,7 @@ import com.alphacircle.vroadway.ui.info.Info
 import com.alphacircle.vroadway.ui.player.PlayerScreen
 import com.alphacircle.vroadway.ui.player.PlayerViewModel
 import com.alphacircle.vroadway.ui.settings.Guides
+import com.alphacircle.vroadway.ui.settings.License
 import com.alphacircle.vroadway.ui.settings.Policy
 import com.alphacircle.vroadway.ui.settings.Notices
 import com.alphacircle.vroadway.ui.settings.Settings
@@ -97,17 +98,21 @@ fun VroadwayApp(
                     onBackPress = appState::navigateBack,
                     navigateToGuides = appState::navigateToGuides,
                     navigateToNotices = appState::navigateToNotices,
-                    navigateToLicense = appState::navigateToLicense
+                    navigateToLicense = appState::navigateToLicense,
+                    navigateToPolicy = appState::navigateToPolicy
                 )
             }
             composable(Screen.Guides.route) { _ ->
                 Guides(onBackPress = appState::navigateBack)
             }
-            composable(Screen.License.route) { _ ->
+            composable(Screen.Policy.route) { _ ->
                 Policy(onBackPress = appState::navigateBack)
             }
             composable(Screen.Notices.route) { _ ->
                 Notices(onBackPress = appState::navigateBack)
+            }
+            composable(Screen.License.route) { _ ->
+                License(onBackPress = appState::navigateBack)
             }
             composable(Screen.Player.route) { backStackEntry ->
                 val playerViewModel: PlayerViewModel = viewModel(

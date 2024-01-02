@@ -43,7 +43,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.alphacircle.vroadway.data.category.Content
 import com.alphacircle.vroadway.data.category.HighLevelCategory
 import com.alphacircle.vroadway.ui.home.category.VRCategory
+import com.alphacircle.vroadway.ui.theme.EnglishTypography
 import com.alphacircle.vroadway.ui.theme.Keyline1
+import com.alphacircle.vroadway.ui.theme.VroadwayColors
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterialApi::class)
@@ -58,10 +60,7 @@ fun Discover(
 
     val selectedCategory = viewState.selectedCategory
     if (viewState.categories.isNotEmpty() && selectedCategory != null) {
-
         Column(modifier) {
-            Spacer(Modifier.height(8.dp))
-
             CategoryTabs(
                 categories = viewState.categories,
                 selectedCategory = selectedCategory,
@@ -147,7 +146,7 @@ private fun MyCategoryTabs(
                 ChoiceCategoryChip(
                     text = category.name,
                     selected = index == selectedIndex,
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
         }
@@ -161,21 +160,21 @@ private fun ChoiceCategoryChip(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        color = when {
-            selected -> MaterialTheme.colors.primary.copy(alpha = 0.08f)
-            else -> MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
-        },
+//        color = when {
+//            selected -> MaterialTheme.colors.primary.copy(alpha = 0.08f)
+//            else -> MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
+//        },
         contentColor = when {
-            selected -> MaterialTheme.colors.primary
-            else -> MaterialTheme.colors.onSurface
+            selected -> VroadwayColors.primaryVariant
+            else -> VroadwayColors.onSurface
         },
         shape = MaterialTheme.shapes.small,
         modifier = modifier
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.body2,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            style = EnglishTypography.subtitle1,
+            modifier = Modifier.padding(horizontal = 8.dp)
         )
     }
 }

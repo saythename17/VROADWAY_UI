@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright 2020 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      https://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
 <resources>
     <string name="app_name">VROADWAY3.0</string>
 
@@ -33,6 +18,7 @@
     <string name="no_download_list">다운로드한 컨텐츠가 없습니다.</string>
 
     <string name="home_discover">Discover</string>
+    <string name="delete_content_alert_dialog_title">선택하신 컨텐츠를 삭제하시겠습니까?</string>
 
     <string name="bottom_sheet_guide_iap">한번의 결제로 다~ 즐기기</string>
     <string name="bottom_sheet_guide_iap_sub">카테고리 내 모든 컨텐츠 관람 가능</string>
@@ -72,12 +58,16 @@
     <string name="account_purchased_history">Purchased History</string>
     <string name="no_purchased_history">구매 내역이 없습니다.</string>
     <string name="account_logout">Logout</string>
+    <string name="account_delete_alert_dialog_title">정말 탈퇴하시겠습니까?</string>
+    <string name="account_delete_alert_dialog_text">탈퇴 후에는 이용 중인 서비스에 제약이 있을 수 있습니다.</string>
+    <string name="account_delet_alert_dialog_confirm">탈퇴</string>
 
     <string name="cd_settings">Settings</string>
     <string name="setting_item_download">Downloads on Wi-Fi Only</string>
     <string name="setting_item_hmd">Change HMD Type</string>
     <string name="setting_item_guide">Guides &amp; FAQ</string>
     <string name="setting_item_notices">Notices</string>
+    <string name="setting_item_license">Licenses</string>
     <string name="setting_item_policy">Policy</string>
 
     <string name="cd_add">Add</string>
